@@ -1,0 +1,14 @@
+spring:
+  datasource:
+    username: root
+    password: ga1234
+    url: jdbc:mysql://localhost:3306/fpoly_graduation_4ae
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  jpa:
+    show-sql: true
+    hibernate:
+      ddl-auto: update
+    properties.hibernate.dialect: org.hibernate.dialect.MySQL5Dialect
+  h2:
+    console:
+      enabled: true
