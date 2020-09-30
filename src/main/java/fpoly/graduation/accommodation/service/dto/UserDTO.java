@@ -1,5 +1,6 @@
 package fpoly.graduation.accommodation.service.dto;
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -10,13 +11,26 @@ import java.time.Instant;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class AccountDTO implements Serializable {
+public class UserDTO implements Serializable {
 
     private Integer id;
 
-    private String username;
+    private String name;
 
-    private String password;
+    @JsonDeserialize(using = CustomInstantDeserializer.class)
+    private Instant birthday;
+
+    private Integer gender;
+
+    private String address;
+
+    private String email;
+
+    private String phone;
+
+    private Integer balance;
+
+    private Integer verified;
 
     private Integer status;
 
@@ -27,9 +41,4 @@ public class AccountDTO implements Serializable {
     private Instant lastModifiedDate;
 
     private String lastModifiedBy;
-
-    private Integer verified;
-
-    private UserDTO user;
-
 }
