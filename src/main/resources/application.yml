@@ -1,8 +1,8 @@
 spring:
   datasource:
     username: root
-    password: ga1234
-    url: jdbc:mysql://localhost:3306/fpoly_graduation_4ae
+    password:
+    url: jdbc:mysql://localhost:3306/da2_motel?serverTimezone=Asia/Bangkok
     driver-class-name: com.mysql.cj.jdbc.Driver
   jpa:
     show-sql: true
