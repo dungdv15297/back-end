@@ -22,6 +22,8 @@ public class JwtUtil implements Serializable {
     @Value("${jwt.secret}")
     private String secret;
 
+    private final long JWT_EXPIRATION = 604800000L;
+
     public String extractUsername(String token) {
         return extractClaim(token, Claims::getSubject);
     }
@@ -42,7 +44,7 @@ public class JwtUtil implements Serializable {
         return extractExpiration(token).before(new Date());
     }
 
-    public String generateToken(UserDetails userDetails) {
+    public String generateToken(CustomUserDetails userDetails) {
         Map<String, Object> claims = new HashMap<>();
         return createToken(claims, userDetails.getUsername());
     }

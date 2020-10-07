@@ -26,12 +26,12 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter implements Appl
     @Autowired
     private JwtFilter jwtFilter;
 
-    @Autowired
-    private PasswordEncoder passwordEncoder;
+//    @Autowired
+//    private PasswordEncoder passwordEncoder;
 
     @Override
     protected  void configure(AuthenticationManagerBuilder auth) throws Exception{
-        auth.userDetailsService(accountService).passwordEncoder(passwordEncoder);
+        auth.userDetailsService(accountService).passwordEncoder(passwordEncoder());
     }
     @Bean
     public PasswordEncoder passwordEncoder() {
