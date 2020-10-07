@@ -1,6 +1,7 @@
 package fpoly.graduation.accommodation.domain;
 
-import com.fis.egp.common.domain.AbstractAuditingEntity;
+
+import fpoly.graduation.accommodation.config.common.domain.AbstractAuditingEntity;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;

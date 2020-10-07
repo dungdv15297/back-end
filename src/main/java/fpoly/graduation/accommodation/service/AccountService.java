@@ -1,13 +1,23 @@
 package fpoly.graduation.accommodation.service;
 
-import com.fis.egp.common.client.rest.dto.ValidationErrorResponse;
-import com.fis.egp.common.config.ValidationError;
-import com.fis.egp.common.exception.ServiceException;
-import com.fis.egp.common.security.SecurityUtils;
-import com.fis.egp.common.util.ServiceExceptionBuilder;
-import com.fis.egp.common.util.ServiceUtil;
+
+//import com.fis.egp.common.client.rest.dto.ValidationErrorResponse;
+//import com.fis.egp.common.config.ValidationError;
+//import com.fis.egp.common.exception.ServiceException;
+//import com.fis.egp.common.util.ServiceExceptionBuilder;
+//import com.fis.egp.common.util.ServiceUtil;
+//import com.fis.egp.common.config.ValidationError;
+//import com.fis.egp.common.util.ServiceExceptionBuilder;
+//import com.fis.egp.common.config.ValidationError;
 import fpoly.graduation.accommodation.client.dto.account.CreateAccountRequest;
 import fpoly.graduation.accommodation.client.dto.account.CreateAccountResponse;
+import fpoly.graduation.accommodation.config.CustomUserDetails;
+import fpoly.graduation.accommodation.config.common.ValidationErrorResponse;
+import fpoly.graduation.accommodation.config.common.exception.ServiceException;
+import fpoly.graduation.accommodation.config.common.security.SecurityUtils;
+//import fpoly.graduation.accommodation.config.common.util.ServiceExceptionBuilder;
+import fpoly.graduation.accommodation.config.common.util.ServiceExceptionBuilder;
+import fpoly.graduation.accommodation.config.common.validationError.ValidationError;
 import fpoly.graduation.accommodation.domain.Account;
 import fpoly.graduation.accommodation.domain.Users;
 import fpoly.graduation.accommodation.repository.AccountRepository;
@@ -18,6 +28,7 @@ import fpoly.graduation.accommodation.service.mapper.AccountMapper;
 import fpoly.graduation.accommodation.service.mapper.UserMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.boot.context.properties.bind.validation.ValidationErrors;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -25,6 +36,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.validation.Validation;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Optional;
@@ -57,21 +69,27 @@ public class AccountService implements UserDetailsService {
         this.userMapper= userMapper;
     }
 
-    public CreateAccountResponse create(CreateAccountRequest request) throws ServiceException, Exception{
+    public CreateAccountResponse create(CreateAccountRequest request) throws ServiceException, Exception {
         try {
-            if(request == null){
-                ServiceUtil.generateEmptyPayloadError();
-            }
-            if(request.getAccount() == null){
-                throw ServiceExceptionBuilder.newBuilder()
-                        .addError(new ValidationErrorResponse("account", ValidationError.NotNull))
-                        .build();
-            }
+//            if(request == null){
+//                ServiceUtil.generateEmptyPayloadError();
+//            }
+//            if(request.getAccount() == null){
+//                throw ServiceExceptionBuilder.newBuilder()
+//                        .addError(new ValidationErrorResponse("account", ValidationError.NotNull))
+//                        .build();
+//            }
             Optional<Account> accountSearch = accountRepository.findUserName(request.getAccount().getUsername());
             if(accountSearch.isPresent()){
+//                throw ServiceExceptionBuilder.newBuilder()
+//                        .addError(new ValidationErrorResponse("account", ValidationError.Duplicate))
+//                        .build();
+//               throw com.fis.egp.common.util.ServiceExceptionBuilder.newBuilder()
+
                 throw ServiceExceptionBuilder.newBuilder()
-                        .addError(new ValidationErrorResponse("account",ValidationError.Duplicate))
+                        .addError(new ValidationErrorResponse("account", ValidationError.Duplicate))
                         .build();
+
             }
 
             AccountDTO dto = request.getAccount();
@@ -109,11 +127,7 @@ public class AccountService implements UserDetailsService {
             response.setAccount(accountMapper.toDto(account));
 
             return response;
-        }
-        catch (ServiceException e){
-            throw e;
-        }
-        catch (Exception e){
+        } catch (Exception e){
             throw e;
         }
 
@@ -124,10 +138,20 @@ public class AccountService implements UserDetailsService {
 //        return new org.springframework.security.core.userdetails.User(account.getUsername(), account.getPassword(), new ArrayList<>());
         try {
             Account account = accountRepository.findByUserName(username);
-            return new User(account.getUsername(),account.getPassword(),new ArrayList<>());
+            if(account == null){
+                throw new UsernameNotFoundException(username);
+            }
+            System.out.println(account.toString());
+            return new CustomUserDetails(account);
         }
         catch (Exception e){
             throw e;
         }
     }
+
+
+//    @Override
+//    public UserDetails loadUserByUsername(String s) throws UsernameNotFoundException {
+//        return null;
+//    }
 }
