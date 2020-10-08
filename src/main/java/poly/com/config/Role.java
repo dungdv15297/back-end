@@ -1,6 +1,6 @@
 package poly.com.config;
 
 public @interface Role {
-    String Admin ="QTV";
-    String User ="BTV";
+    Integer Admin = 1;
+    Integer User = 0;
 }

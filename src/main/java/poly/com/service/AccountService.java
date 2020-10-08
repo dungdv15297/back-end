@@ -1,27 +1,17 @@
 package poly.com.service;
 
-
-//import com.fis.egp.common.client.rest.dto.ValidationErrorResponse;
-//import com.fis.egp.common.config.ValidationError;
-//import com.fis.egp.common.exception.ServiceException;
-//import com.fis.egp.common.util.ServiceExceptionBuilder;
-//import com.fis.egp.common.util.ServiceUtil;
-//import com.fis.egp.common.config.ValidationError;
-//import com.fis.egp.common.util.ServiceExceptionBuilder;
-//import com.fis.egp.common.config.ValidationError;
 import poly.com.client.dto.account.CreateAccountRequest;
 import poly.com.client.dto.account.CreateAccountResponse;
 import poly.com.config.CustomUserDetails;
 import poly.com.config.common.ValidationErrorResponse;
 import poly.com.config.common.exception.ServiceException;
 import poly.com.config.common.security.SecurityUtils;
-//import ServiceExceptionBuilder;
 import poly.com.config.common.util.ServiceExceptionBuilder;
 import poly.com.config.common.validationError.ValidationError;
 import poly.com.domain.Account;
 import poly.com.domain.AccountDetail;
+import poly.com.repository.AccountDetailRepository;
 import poly.com.repository.AccountRepository;
-import poly.com.repository.UserRepository;
 import poly.com.service.dto.AccountDTO;
 import poly.com.service.dto.UserDTO;
 import poly.com.service.mapper.AccountMapper;
@@ -49,19 +39,19 @@ public class AccountService implements UserDetailsService {
 
     private final AccountMapper accountMapper;
 
-    private final UserRepository userRepository;
+    private final AccountDetailRepository accountDetailRepository;
 
     private final UserMapper userMapper;
 
     public AccountService(
             AccountRepository accountRepository,
             AccountMapper accountMapper,
-            UserRepository userRepository,
+            AccountDetailRepository accountDetailRepository,
             UserMapper userMapper
     ){
         this.accountMapper = accountMapper;
         this.accountRepository = accountRepository;
-        this.userRepository = userRepository;
+        this.accountDetailRepository = accountDetailRepository;
         this.userMapper= userMapper;
     }
 
@@ -115,7 +105,7 @@ public class AccountService implements UserDetailsService {
             accountDetail.setLastModifiedBy(SecurityUtils.getCurrentUserLogin().get());
             accountDetail.setLastModifiedDate(Instant.now());
 
-            userRepository.save(accountDetail);
+            accountDetailRepository.save(accountDetail);
             CreateAccountResponse response = new CreateAccountResponse();
             accountRepository.save(account);
             response.setAccount(accountMapper.toDto(account));

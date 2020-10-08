@@ -1,17 +1,14 @@
 package poly.com.web.rest;
 
-//import com.fis.egp.common.exception.ServiceException;
-import poly.com.client.dto.account.AuthRequest;
-import poly.com.client.dto.account.AuthResponse;
-import poly.com.client.dto.account.CreateAccountRequest;
-import poly.com.client.dto.account.CreateAccountResponse;
-import poly.com.config.CustomUserDetails;
-import poly.com.config.JwtUtil;
-import poly.com.config.common.BaseDataRequest;
-import poly.com.config.common.BaseDataResponse;
-import poly.com.config.common.MD5Library;
+import poly.com.client.dto.account.*;
+import poly.com.config.*;
+import poly.com.config.common.*;
 import poly.com.config.common.exception.ServiceException;
 import poly.com.config.common.util.ResponseUtil;
+import poly.com.domain.Account;
+import poly.com.domain.AccountDetail;
+import poly.com.repository.AccountDetailRepository;
+import poly.com.repository.AccountRepository;
 import poly.com.service.AccountService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,8 +19,8 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.*;
-import sun.security.provider.MD5;
 
+import java.time.Instant;
 import java.util.UUID;
 
 @RestController
@@ -38,6 +35,12 @@ public class AccountResource {
 
     @Autowired
     private AuthenticationManager authenticationManager;
+
+    @Autowired
+    private AccountRepository accountRepository;
+
+    @Autowired
+    private AccountDetailRepository accountDetailRepository;
 
     public AccountResource(
             AccountService accountService,
@@ -67,21 +70,82 @@ public class AccountResource {
     public String welcome(){
         return "Hello every body";
     }
+
     @PostMapping("/authenticate")
     public ResponseEntity<AuthResponse> generateToken(@RequestBody AuthRequest request) throws Exception{
         try {
-//            Authentication authentication = authenticationManager.authenticate(
-//                    new UsernamePasswordAuthenticationToken(request.getUsername(),request.getPassword()));
             UserDetails userDetails = accountService.loadUserByUsername(request.getUsername());
             if(!MD5Library.compareMd5(request.getPassword(), userDetails.getPassword())){
                 throw new UsernameNotFoundException("PasswordNotFound");
             }
             SecurityContextHolder.getContext().getAuthentication();
             String token = jwtUtil.generateToken((CustomUserDetails) userDetails);
-            return ResponseEntity.ok(new AuthResponse(token));
+            return ResponseEntity.ok(AuthResponse.builder().jwt(token).build());
         }
         catch (Exception e){
             throw new Exception("inavalid username/password");
+        }
+    }
+
+    @PostMapping("/register")
+    public ResponseEntity<AuthResponse> register(@RequestBody RegisterRequest request) throws Exception {
+        try {
+            String fullname = request.getFullname().trim();
+            String phone = request.getPhone().trim().replace(" ", "");
+            String username = request.getUsername().trim().replace(" ","");
+            String password = request.getPassword();
+            String rePassword = request.getRePassword();
+            if (fullname.length() == 0
+                    || !phone.matches("\\+?(0|84)\\d{9}")
+                    || username.length() < 4
+                    || password.length() < 6
+                    || rePassword.length() < 6
+                    || !password.equals(rePassword)) {
+                // Nội dung ERR004: Thông tin đã nhập không hợp lệ
+                return ResponseEntity.badRequest().body(AuthResponse.builder().errorCode("ERR004").build());
+            }
+
+            Account checkAcc = accountRepository.findByUserName(username);
+            // Check xem user có tồn tại trong DB hay không, nếu đã tồn tại, return exception ERR05
+            // Nội dung ERR05: Username đã tồn tại trong hệ thống
+            if (checkAcc != null) {
+                return ResponseEntity.badRequest().body(AuthResponse.builder().errorCode("ERR005").build());
+            }
+            Account account = new Account();
+            AccountDetail accountDetail = new AccountDetail();
+            account.setId(UUID.randomUUID().toString());
+            account.setUsername(username);
+            account.setPassword(MD5Library.md5(password));
+            account.setRole(Role.User);
+            account.setCreatedDate(Instant.now());
+            account.setCreatedBy(username);
+            account.setLastModifiedBy(username);
+            account.setLastModifiedDate(Instant.now());
+            account.setStatus(AccountStatus.NotVerified);
+
+            accountDetail.setId(UUID.randomUUID().toString());
+            accountDetail.setName(fullname);
+            accountDetail.setPhone(phone);
+            accountDetail.setBirthday(Instant.now());
+            accountDetail.setCreatedDate(Instant.now());
+            accountDetail.setCreatedBy(username);
+            accountDetail.setLastModifiedBy(username);
+            accountDetail.setLastModifiedDate(Instant.now());
+            accountDetail.setStatus(Status.Active);
+            accountDetail.setAccount(account);
+
+            account.setAccountDetail(accountDetail);
+            accountDetailRepository.save(accountDetail);
+            accountRepository.save(account);
+
+            // Sau khi thêm tài khoản và chi tiết tài khoản, tìm tài khoản
+            // Trả về client token tương ứng
+            UserDetails userAfterCreated = accountService.loadUserByUsername(username);
+            SecurityContextHolder.getContext().getAuthentication();
+            String token = jwtUtil.generateToken((CustomUserDetails) userAfterCreated);
+            return ResponseEntity.ok(AuthResponse.builder().jwt(token).build());
+        } catch (Exception e) {
+            throw e;
         }
     }
 }

@@ -38,8 +38,8 @@ CREATE TABLE `account` (
   `PASSWORD` varchar(255) NOT NULL,
   `STATUS` int(11) NOT NULL,
   `ACCOUNT_DETAIL_ID` varchar(255) NOT NULL,
-  `CREATED_DATE` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
-  `UPDATE_DATE` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00',
+  `CREATED_DATE` timestamp NOT NULL DEFAULT current_timestamp(),
+  `UPDATE_DATE` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
   `CREATED_BY` varchar(50) NOT NULL,
   `UPDATED_BY` varchar(50) NOT NULL,
   `ROLE` int(11) NOT NULL

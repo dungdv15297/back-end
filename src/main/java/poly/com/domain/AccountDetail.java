@@ -46,4 +46,8 @@ public class AccountDetail extends AbstractAuditingEntity implements Serializabl
 
     @Column(name = "STATUS")
     private Integer status;
+
+    @OneToOne(mappedBy = "accountDetail")
+    private Account account;
+
 }

@@ -18,4 +18,7 @@ public interface AccountRepository extends JpaRepository<Account,Integer> {
     @Query(" from Account ac where 1=1 " +
             "and (ac.username =:userName)")
     Optional<Account> findUserName(@Param("userName") String userName);
+
+    @Query(" select ac.role from Account ac where 1=1 and ac.id = :id")
+    Integer getRoleById(@Param("id") String id);
 }
