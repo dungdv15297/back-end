@@ -111,9 +111,10 @@ public class AccountResource {
             if (checkAcc != null) {
                 return ResponseEntity.badRequest().body(AuthResponse.builder().errorCode("ERR005").build());
             }
+            String id = UUID.randomUUID().toString();
             Account account = new Account();
             AccountDetail accountDetail = new AccountDetail();
-            account.setId(UUID.randomUUID().toString());
+            account.setId(id);
             account.setUsername(username);
             account.setPassword(MD5Library.md5(password));
             account.setRole(Role.User);
@@ -123,7 +124,7 @@ public class AccountResource {
             account.setLastModifiedDate(Instant.now());
             account.setStatus(AccountStatus.NotVerified);
 
-            accountDetail.setId(UUID.randomUUID().toString());
+            accountDetail.setId(id);
             accountDetail.setName(fullname);
             accountDetail.setPhone(phone);
             accountDetail.setBirthday(Instant.now());
@@ -132,9 +133,6 @@ public class AccountResource {
             accountDetail.setLastModifiedBy(username);
             accountDetail.setLastModifiedDate(Instant.now());
             accountDetail.setStatus(Status.Active);
-            accountDetail.setAccount(account);
-
-            account.setAccountDetail(accountDetail);
             accountDetailRepository.save(accountDetail);
             accountRepository.save(account);
 

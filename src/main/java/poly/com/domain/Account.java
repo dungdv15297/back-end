@@ -29,10 +29,6 @@ public class Account extends AbstractAuditingEntity implements Serializable {
     @Column(name = "STATUS")
     private Integer status;
 
-    @OneToOne
-    @JoinColumn(name = "ACCOUNT_DETAIL_ID")
-    private AccountDetail accountDetail;
-
     @Column(name = "ROLE")
     private Integer role;
 }

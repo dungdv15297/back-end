@@ -37,7 +37,6 @@ CREATE TABLE `account` (
   `USERNAME` varchar(12) NOT NULL UNIQUE,
   `PASSWORD` varchar(255) NOT NULL,
   `STATUS` int(11) NOT NULL,
-  `ACCOUNT_DETAIL_ID` varchar(255) NOT NULL,
   `CREATED_DATE` timestamp NOT NULL DEFAULT current_timestamp(),
   `UPDATE_DATE` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
   `CREATED_BY` varchar(50) NOT NULL,
@@ -219,13 +218,6 @@ CREATE TABLE `street` (
 --
 
 --
--- Indexes for table `account`
---
-ALTER TABLE `account`
-  ADD PRIMARY KEY (`ACCOUNT_ID`),
-  ADD UNIQUE KEY `ACCOUNT_DETAIL_ID` (`ACCOUNT_DETAIL_ID`);
-
---
 -- Indexes for table `account_detail`
 --
 ALTER TABLE `account_detail`
@@ -295,7 +287,7 @@ ALTER TABLE `street`
 -- Constraints for table `account`
 --
 ALTER TABLE `account`
-  ADD CONSTRAINT `FK_ACCOUNT_DETAIL_ACCOUNT` FOREIGN KEY (`ACCOUNT_DETAIL_ID`) REFERENCES `account_detail` (`ACCOUNT_DETAIL_ID`) ON DELETE CASCADE ON UPDATE CASCADE;
+  ADD CONSTRAINT `FK_ACCOUNT_DETAIL_ACCOUNT` FOREIGN KEY (`ACCOUNT_ID`) REFERENCES `account_detail` (`ACCOUNT_DETAIL_ID`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
 -- Constraints for table `district`
