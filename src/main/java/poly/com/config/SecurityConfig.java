@@ -47,6 +47,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter implements Appl
 
     @Override
     protected void configure(HttpSecurity http) throws Exception{
+        http.cors();
         http.csrf().disable().authorizeRequests().antMatchers("/api/account/authenticate", "/api/account/register")
                 .permitAll().anyRequest().authenticated()
                 .and().exceptionHandling().and().sessionManagement()

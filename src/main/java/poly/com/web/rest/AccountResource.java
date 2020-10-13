@@ -1,6 +1,8 @@
 package poly.com.web.rest;
 
+import org.springframework.security.core.Authentication;
 import poly.com.client.dto.account.*;
+import poly.com.client.dto.accountDetail.AccountDetailDto;
 import poly.com.config.*;
 import poly.com.config.common.*;
 import poly.com.config.common.exception.ServiceException;
@@ -69,6 +71,24 @@ public class AccountResource {
     @GetMapping("/")
     public String welcome(){
         return "Hello every body";
+    }
+
+    @GetMapping("/byToken")
+    public ResponseEntity<AccountDetailDto> getAccountDetailByToken() {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        if (auth == null) {
+            return ResponseEntity.badRequest().body(AccountDetailDto.builder().errorCode("ERR006").build());
+        }
+        String username = auth.getName();
+        Account account = accountRepository.findByUserName(username);
+        if (account == null) {
+            return ResponseEntity.badRequest().body(AccountDetailDto.builder().errorCode("ERR007").build());
+        }
+        AccountDetail accountDetail = accountDetailRepository.findById(account.getId());
+        if (accountDetail == null) {
+            return ResponseEntity.badRequest().body(AccountDetailDto.builder().errorCode("ERR007").build());
+        }
+        return ResponseEntity.ok(accountDetail.toDto());
     }
 
     @PostMapping("/authenticate")

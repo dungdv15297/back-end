@@ -1,6 +1,7 @@
 package poly.com.domain;
 
 
+import poly.com.client.dto.accountDetail.AccountDetailDto;
 import poly.com.config.common.domain.AbstractAuditingEntity;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -46,5 +47,19 @@ public class AccountDetail extends AbstractAuditingEntity implements Serializabl
 
     @Column(name = "STATUS")
     private Integer status;
+
+    public AccountDetailDto toDto() {
+        return AccountDetailDto.builder()
+                .id(id)
+                .name(name)
+                .birthday(birthday.toString())
+                .gender(gender)
+                .address(address)
+                .email(email)
+                .phone(phone)
+                .balance(balance)
+                .status(status)
+                .build();
+    }
 
 }
