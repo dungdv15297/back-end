@@ -171,6 +171,8 @@ public class AccountResource {
             accountDetail.setLastModifiedBy(username);
             accountDetail.setLastModifiedDate(Instant.now());
             accountDetail.setStatus(Status.Active);
+            accountDetail.setBalance(0);
+            accountDetail.setGender(0);
             accountDetailRepository.save(accountDetail);
             accountRepository.save(account);
 
