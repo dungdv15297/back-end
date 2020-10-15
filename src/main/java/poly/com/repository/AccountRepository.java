@@ -21,4 +21,7 @@ public interface AccountRepository extends JpaRepository<Account,Integer> {
 
     @Query(" select ac.role from Account ac where 1=1 and ac.id = :id")
     Integer getRoleById(@Param("id") String id);
+
+    @Query(" from Account ac where 1=1 and ac.id = :id")
+    Account findById(@Param("id") String id);
 }

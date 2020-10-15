@@ -1,0 +1,5 @@
+ALTER TABLE `account_detail`
+ALTER `BALANCE` SET DEFAULT 0
+
+ALTER TABLE `account_detail`
+ALTER `GENDER` SET DEFAULT 0

@@ -74,7 +74,7 @@ public class AccountResource {
     }
 
     @GetMapping("/byToken")
-    public ResponseEntity<AccountDetailDto> getAccountDetailByToken() {
+    public ResponseEntity<AccountDetailDto> getAccountDetailByToken() throws Exception {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         if (auth == null) {
             return ResponseEntity.badRequest().body(AccountDetailDto.builder().errorCode("ERR006").build());
@@ -89,6 +89,24 @@ public class AccountResource {
             return ResponseEntity.badRequest().body(AccountDetailDto.builder().errorCode("ERR007").build());
         }
         return ResponseEntity.ok(accountDetail.toDto());
+    }
+
+    @PostMapping("/getById")
+    public ResponseEntity<AccountDetailDto> getAccountDetailById(@RequestBody String id) throws Exception {
+        try {
+            AccountDetail accountDetail = accountDetailRepository.findById(id);
+            if (accountDetail == null) {
+                return ResponseEntity.badRequest().body(AccountDetailDto.builder().errorCode("ERR007").build());
+            }
+            Account account = accountRepository.findById(id);
+            AccountDetailDto result = accountDetail.toDto();
+            result.setUsername(account.getUsername());
+            result.setUpdatedAc(account.getLastModifiedDate().toString());
+            return ResponseEntity.ok(result);
+        } catch (Exception e) {
+            // Khong the tim thay thong tin tai khoan
+            return ResponseEntity.badRequest().body(AccountDetailDto.builder().errorCode("ERR007").build());
+        }
     }
 
     @PostMapping("/authenticate")

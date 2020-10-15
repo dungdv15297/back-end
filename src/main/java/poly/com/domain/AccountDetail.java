@@ -59,6 +59,7 @@ public class AccountDetail extends AbstractAuditingEntity implements Serializabl
                 .phone(phone)
                 .balance(balance)
                 .status(status)
+                .updated(getLastModifiedDate().toString())
                 .build();
     }
 

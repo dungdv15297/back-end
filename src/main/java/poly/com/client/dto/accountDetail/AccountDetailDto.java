@@ -15,5 +15,8 @@ public class AccountDetailDto {
     private String phone;
     private Integer balance;
     private Integer status;
+    private String updated;
+    private String username;
+    private String updatedAc;
     private String errorCode;
 }
