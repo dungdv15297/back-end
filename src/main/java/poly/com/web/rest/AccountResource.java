@@ -1,6 +1,8 @@
 package poly.com.web.rest;
 
+import com.sun.org.apache.xpath.internal.operations.Bool;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
 import poly.com.client.dto.account.*;
 import poly.com.client.dto.accountDetail.AccountDetailDto;
 import poly.com.config.*;
@@ -22,6 +24,8 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.time.Instant;
 import java.util.UUID;
 
@@ -68,6 +72,30 @@ public class AccountResource {
             return ResponseUtil.generateErrorResponse(e);
         }
     }
+
+    @PostMapping("/update")
+    public ResponseEntity<BaseDataResponse> update(@RequestBody UpdateAccountRequest request) {
+        Account account = accountRepository.findByUserName(request.getUsername());
+        if (account == null) {
+            // ERR010: Account not found
+            return ResponseEntity.badRequest().body(BaseDataResponse.builder().responseCode("ERR010").build());
+        }
+        if (!MD5Library.compareMd5(request.getPassword(), account.getPassword())) {
+            // Password is invalid
+            return ResponseEntity.badRequest().body(BaseDataResponse.builder().responseCode("ERR011").build());
+        }
+        if (!request.getNewPassword().equals(request.getConfirm())) {
+            // New password and confirm password not be compared
+            return ResponseEntity.badRequest().body(BaseDataResponse.builder().responseCode("ERR012").build());
+        }
+
+        account.setPassword(MD5Library.md5(request.getNewPassword()));
+        account.setLastModifiedDate(Instant.now());
+        account.setLastModifiedBy(account.getUsername());
+        accountRepository.save(account);
+        return ResponseEntity.ok(BaseDataResponse.builder().build());
+    }
+
     @GetMapping("/")
     public String welcome(){
         return "Hello every body";
@@ -185,5 +213,15 @@ public class AccountResource {
         } catch (Exception e) {
             throw e;
         }
+    }
+
+    @PostMapping("/logout")
+    public ResponseEntity<Boolean> logout(HttpServletRequest request, HttpServletResponse response) throws Exception {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        if (auth != null) {
+            new SecurityContextLogoutHandler().logout(request, response, auth);
+            return ResponseEntity.ok(true);
+        }
+        return ResponseEntity.badRequest().body(false);
     }
 }

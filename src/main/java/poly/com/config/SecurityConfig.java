@@ -1,6 +1,7 @@
 package poly.com.config;
 
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
+import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
 import poly.com.service.AccountService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContextAware;
@@ -47,11 +48,17 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter implements Appl
 
     @Override
     protected void configure(HttpSecurity http) throws Exception{
-        http.cors();
-        http.csrf().disable().authorizeRequests().antMatchers("/api/account/authenticate", "/api/account/register")
-                .permitAll().anyRequest().authenticated()
-                .and().exceptionHandling().and().sessionManagement()
-                .sessionCreationPolicy(SessionCreationPolicy.STATELESS);
-        http.addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
+        http.csrf().disable()
+            .authorizeRequests()
+                .antMatchers("/api/account/authenticate", "/api/account/register").permitAll()
+                .anyRequest().authenticated()
+            .and()
+                .exceptionHandling()
+            .and()
+                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+            .and()
+                .cors()
+            .and()
+                .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
     }
 }
