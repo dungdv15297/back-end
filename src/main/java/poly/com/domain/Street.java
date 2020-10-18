@@ -5,10 +5,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import poly.com.config.common.domain.AbstractAuditingEntity;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.io.Serializable;
 
 @Data
@@ -21,10 +18,13 @@ public class Street extends AbstractAuditingEntity implements Serializable {
 
     @Id
     @Column(name = "STREET_ID")
+    @GeneratedValue(strategy = GenerationType.SEQUENCE,generator = "streetSeq")
+    @SequenceGenerator(name = "streetSeq",sequenceName = "graduation_streetSeq",allocationSize = 1)
     private Integer id;
 
-    @Column(name = "DISTRICT_ID")
-    private Integer districtId;
+    @ManyToOne
+    @JoinColumn(name ="DISTRICT_ID",referencedColumnName = "DISTRICT_ID")
+    private District district;
 
     @Column(name = "NAME")
     private String name;

@@ -5,10 +5,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import poly.com.config.common.domain.AbstractAuditingEntity;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.io.Serializable;
 
 @Data
@@ -21,6 +18,8 @@ public class PriceRange extends AbstractAuditingEntity implements Serializable {
 
     @Id
     @Column(name = "PRICE_RANGE_ID")
+    @GeneratedValue(strategy = GenerationType.SEQUENCE,generator = "priceSeq")
+    @SequenceGenerator(name = "priceSeq",sequenceName = "graduation_priceSeq",allocationSize = 1)
     private Integer id;
 
     @Column(name = "MIN")

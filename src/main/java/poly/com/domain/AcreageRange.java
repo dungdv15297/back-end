@@ -5,10 +5,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import poly.com.config.common.domain.AbstractAuditingEntity;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.io.Serializable;
 import java.time.Instant;
 
@@ -22,6 +19,8 @@ public class AcreageRange extends AbstractAuditingEntity implements Serializable
 
     @Id
     @Column(name = "ACREAGE_RANGE_ID")
+    @GeneratedValue(strategy = GenerationType.SEQUENCE,generator = "acreageSeq")
+    @SequenceGenerator(name = "acreageSeq",sequenceName = "graduation_acreageSeq",allocationSize = 1)
     private Integer id;
 
     @Column(name = "MIN")

@@ -118,8 +118,6 @@ public class AccountService implements UserDetailsService {
     }
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-//        Account account = accountRepository.findByUserName(username);
-//        return new org.springframework.security.core.userdetails.User(account.getUsername(), account.getPassword(), new ArrayList<>());
         try {
             Account account = accountRepository.findByUserName(username);
             if(account == null){
@@ -133,9 +131,4 @@ public class AccountService implements UserDetailsService {
         }
     }
 
-
-//    @Override
-//    public UserDetails loadUserByUsername(String s) throws UsernameNotFoundException {
-//        return null;
-//    }
 }

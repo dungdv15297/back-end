@@ -5,10 +5,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import poly.com.config.common.domain.AbstractAuditingEntity;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.io.Serializable;
 
 @Data
@@ -23,14 +20,18 @@ public class Room extends AbstractAuditingEntity implements Serializable {
     @Column(name = "ROOM_ID")
     private String id;
 
-    @Column(name = "PRICE_RANGE_ID")
-    private Integer priceRangeId;
+    @ManyToOne
+    @JoinColumn(name = "price_range_id",referencedColumnName ="price_range_id" )
+    private PriceRange priceRange;
 
-    @Column(name = "ACREAGE_RANGE_ID")
-    private Integer acreageRangId;
+    @ManyToOne
+    @JoinColumn(name = "ACREAGE_RANGE_ID",referencedColumnName = "ACREAGE_RANGE_ID")
+    private AcreageRange acreageRang;
 
+    @ManyToOne
+    @JoinColumn(name = "STREET_ID",referencedColumnName = "STREET_ID")
     @Column(name = "STREET_ID")
-    private Integer streetId;
+    private Street street;
 
     @Column(name = "ADDRESS")
     private String address;
@@ -56,8 +57,10 @@ public class Room extends AbstractAuditingEntity implements Serializable {
     @Column(name = "LATITUDE")
     private Integer latitude;
 
+    @ManyToOne
+    @JoinColumn(name = "ACCOUNT_ID",referencedColumnName = "ACCOUNT_ID")
     @Column(name = "ACCOUNT_ID")
-    private Integer accountId;
+    private Account account;
 
     @Column(name = "STATUS")
     private Integer status;
