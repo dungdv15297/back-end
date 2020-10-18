@@ -7,6 +7,7 @@ import poly.com.config.common.domain.AbstractAuditingEntity;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.time.Instant;
 
 @Data
 @AllArgsConstructor
@@ -62,4 +63,10 @@ public class Room extends AbstractAuditingEntity implements Serializable {
 
     @Column(name = "STATUS")
     private Integer status;
+
+    @Column(name = "UP_TOP_STATUS ")
+    private Integer upTopStatus;
+
+    @Column(name = "LAST_UP_TOP")
+    private Instant lastUpTop;
 }
