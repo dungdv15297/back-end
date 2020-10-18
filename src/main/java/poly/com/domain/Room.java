@@ -30,7 +30,6 @@ public class Room extends AbstractAuditingEntity implements Serializable {
 
     @ManyToOne
     @JoinColumn(name = "STREET_ID",referencedColumnName = "STREET_ID")
-    @Column(name = "STREET_ID")
     private Street street;
 
     @Column(name = "ADDRESS")
@@ -59,7 +58,6 @@ public class Room extends AbstractAuditingEntity implements Serializable {
 
     @ManyToOne
     @JoinColumn(name = "ACCOUNT_ID",referencedColumnName = "ACCOUNT_ID")
-    @Column(name = "ACCOUNT_ID")
     private Account account;
 
     @Column(name = "STATUS")
