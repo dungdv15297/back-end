@@ -52,10 +52,10 @@ public class Room extends AbstractAuditingEntity implements Serializable {
     private Integer acreageMax;
 
     @Column(name = "LONGITUDE")
-    private Integer longtitude;
+    private String longtitude;
 
     @Column(name = "LATITUDE")
-    private Integer latitude;
+    private String latitude;
 
     @ManyToOne
     @JoinColumn(name = "ACCOUNT_ID",referencedColumnName = "ACCOUNT_ID")
@@ -64,7 +64,7 @@ public class Room extends AbstractAuditingEntity implements Serializable {
     @Column(name = "STATUS")
     private Integer status;
 
-    @Column(name = "UP_TOP_STATUS ")
+    @Column(name = "UP_TOP_STATUS")
     private Integer upTopStatus;
 
     @Column(name = "LAST_UP_TOP")

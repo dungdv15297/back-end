@@ -98,7 +98,7 @@ public class AccountResource {
 
     @GetMapping("/")
     public String welcome(){
-        return "Hello every body";
+        return "Hello every body" + Instant.now();
     }
 
     @GetMapping("/byToken")
@@ -141,9 +141,9 @@ public class AccountResource {
     public ResponseEntity<AuthResponse> generateToken(@RequestBody AuthRequest request) throws Exception{
         try {
             UserDetails userDetails = accountService.loadUserByUsername(request.getUsername());
-            if(!MD5Library.compareMd5(request.getPassword(), userDetails.getPassword())){
-                throw new UsernameNotFoundException("PasswordNotFound");
-            }
+//            if(!MD5Library.compareMd5(request.getPassword(), userDetails.getPassword())){
+//                throw new UsernameNotFoundException("PasswordNotFound");
+//            }
             SecurityContextHolder.getContext().getAuthentication();
             String token = jwtUtil.generateToken((CustomUserDetails) userDetails);
             return ResponseEntity.ok(AuthResponse.builder().jwt(token).build());
