@@ -5,11 +5,15 @@ import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import poly.com.client.dto.account.room.*;
+import poly.com.client.dto.room.GetListRoomRequest;
+import poly.com.client.dto.room.GetListRoomResponse;
 import poly.com.config.common.BaseDataRequest;
 import poly.com.config.common.BaseDataResponse;
 import poly.com.config.common.exception.ServiceException;
 import poly.com.config.common.util.ResponseUtil;
 import poly.com.service.RoomService;
+
+import javax.xml.ws.Response;
 
 @RestController
 @RequestMapping("/api/room")
@@ -72,4 +76,5 @@ public class RoomResource {
             return ResponseUtil.generateErrorResponse(e);
         }
     }
+
 }

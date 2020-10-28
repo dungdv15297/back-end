@@ -12,7 +12,7 @@ import java.time.Instant;
 @NoArgsConstructor
 public class AccountDTO implements Serializable {
 
-    private Integer id;
+    private String id;
 
     private String username;
 

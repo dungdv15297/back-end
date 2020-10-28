@@ -4,6 +4,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.Instant;
+
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
@@ -22,9 +24,9 @@ public class RoomDTO {
 
     private Integer acreageMax;
 
-    private Integer longtitude;
+    private String longtitude;
 
-    private Integer latitude;
+    private String latitude;
 
     private Integer status;
 
@@ -43,4 +45,8 @@ public class RoomDTO {
     private AccountDTO account;
 
     private StreetDTO street;
+
+    private Integer upTopStatus;
+
+    private Instant lastUpTop;
 }
