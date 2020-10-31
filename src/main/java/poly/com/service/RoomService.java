@@ -2,6 +2,7 @@ package poly.com.service;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -19,6 +20,7 @@ import poly.com.service.mapper.PriceRageMapper;
 import poly.com.service.mapper.RoomMapper;
 import poly.com.service.mapper.StreetMapper;
 
+import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -126,7 +128,8 @@ public class RoomService {
             room.setLongtitude(request.getRoom().getLongtitude());
             room.setLatitude(request.getRoom().getLatitude());
             room.setStatus(Status.Active);
-
+            room.setCreatedBy(SecurityContextHolder.getContext().getAuthentication().getName());
+            room.setLastModifiedBy(SecurityContextHolder.getContext().getAuthentication().getName());
             CreateRoomResponse response = new CreateRoomResponse();
             response.setRoom(roomMapper.toDto(room));
 
@@ -195,6 +198,8 @@ public class RoomService {
             room.setLongtitude(request.getRoom().getLongtitude());
             room.setLatitude(request.getRoom().getLatitude());
             room.setStatus(Status.Active);
+            room.setLastModifiedBy(SecurityContextHolder.getContext().getAuthentication().getName());
+            room.setLastModifiedDate(Instant.now());
 
             UpdateRoomResponse response = new UpdateRoomResponse();
             response.setRoom(roomMapper.toDto(room));

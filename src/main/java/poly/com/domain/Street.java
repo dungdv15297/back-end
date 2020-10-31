@@ -31,4 +31,10 @@ public class Street extends AbstractAuditingEntity implements Serializable {
 
     @Column(name = "STATUS")
     private Integer status;
+
+    @Column(name = "PREFIX")
+    private String prefix;
+
+    @Column(name = "PROVINCE_ID")
+    private Integer provinceId;
 }
