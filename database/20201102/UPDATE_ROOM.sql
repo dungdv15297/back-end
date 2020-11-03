@@ -1,0 +1,5 @@
+ALTER TABLE room
+ADD `TYPE_OF` int;
+
+ALTER TABLE room
+ADD `TITLE` varchar(255);

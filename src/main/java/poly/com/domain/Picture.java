@@ -5,10 +5,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import poly.com.config.common.domain.AbstractAuditingEntity;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.io.Serializable;
 import java.time.Instant;
 
@@ -24,8 +21,9 @@ public class Picture extends AbstractAuditingEntity implements Serializable {
     @Column(name = "PICTURE_ID")
     private Integer id;
 
-    @Column(name = "ROOM_ID")
-    private String roomId;
+    @ManyToOne
+    @JoinColumn(name = "ROOM_ID",referencedColumnName = "ROOM_ID")
+    private Room room;
 
     @Column(name = "SRC")
     private String src;

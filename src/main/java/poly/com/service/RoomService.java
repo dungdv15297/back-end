@@ -3,7 +3,6 @@ package poly.com.service;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import poly.com.client.dto.account.room.*;
@@ -88,25 +87,13 @@ public class RoomService {
                         .addError(new ValidationErrorResponse("roomId",ValidationError.Duplicate))
                         .build();
             }
-            Optional<PriceRange> priceRange = priceRangeRepository.findById(request.getRoom().getPriceRage().getId());
-            if(!priceRange.isPresent()){
-                throw ServiceExceptionBuilder.newBuilder()
-                        .addError(new ValidationErrorResponse("priceRageId",ValidationError.NotNull))
-                        .build();
-            }
-            Optional<AcreageRange> acreageRange = acreageRageRepository.findById(request.getRoom().getAcreageRange().getId());
-            if(!acreageRange.isPresent()){
-                throw ServiceExceptionBuilder.newBuilder()
-                        .addError(new ValidationErrorResponse("acreageRangeId",ValidationError.NotNull))
-                        .build();
-            }
             Optional<Street> street = streetRepository.findById(request.getRoom().getStreet().getId());
             if(!street.isPresent()){
                 throw ServiceExceptionBuilder.newBuilder()
                         .addError(new ValidationErrorResponse("streetId",ValidationError.NotNull))
                         .build();
             }
-            Optional<Account> account = accountRepository.findById(request.getRoom().getAccount().getId());
+            Optional<Account> account = accountRepository.findOptById(request.getRoom().getAccount().getId());
             if(!account.isPresent()){
                 throw ServiceExceptionBuilder.newBuilder()
                         .addError(new ValidationErrorResponse("accountId",ValidationError.NotNull))
@@ -115,8 +102,6 @@ public class RoomService {
             RoomDTO dto = request.getRoom();
             Room room = roomMapper.toEntity(dto);
             room.setId(UUID.randomUUID().toString());
-            room.setPriceRange(priceRange.get());
-            room.setAcreageRang(acreageRange.get());
             room.setStreet(street.get());
             room.setAccount(account.get());
             room.setAddress(request.getRoom().getAddress());
@@ -158,25 +143,13 @@ public class RoomService {
                         .addError(new ValidationErrorResponse("roomId",ValidationError.Duplicate))
                         .build();
             }
-            Optional<PriceRange> priceRange = priceRangeRepository.findById(request.getRoom().getPriceRage().getId());
-            if(!priceRange.isPresent()){
-                throw ServiceExceptionBuilder.newBuilder()
-                        .addError(new ValidationErrorResponse("priceRageId",ValidationError.NotNull))
-                        .build();
-            }
-            Optional<AcreageRange> acreageRange = acreageRageRepository.findById(request.getRoom().getAcreageRange().getId());
-            if(!acreageRange.isPresent()){
-                throw ServiceExceptionBuilder.newBuilder()
-                        .addError(new ValidationErrorResponse("acreageRangeId",ValidationError.NotNull))
-                        .build();
-            }
             Optional<Street> street = streetRepository.findById(request.getRoom().getStreet().getId());
             if(!street.isPresent()){
                 throw ServiceExceptionBuilder.newBuilder()
                         .addError(new ValidationErrorResponse("streetId",ValidationError.NotNull))
                         .build();
             }
-            Optional<Account> account = accountRepository.findById(request.getRoom().getAccount().getId());
+            Optional<Account> account = accountRepository.findOptById(request.getRoom().getAccount().getId());
             if(!account.isPresent()){
                 throw ServiceExceptionBuilder.newBuilder()
                         .addError(new ValidationErrorResponse("accountId",ValidationError.NotNull))
@@ -185,8 +158,6 @@ public class RoomService {
             RoomDTO dto = request.getRoom();
             Room room = roomMapper.toEntity(dto);
             room.setId(request.getRoom().getId());
-            room.setPriceRange(priceRange.get());
-            room.setAcreageRang(acreageRange.get());
             room.setStreet(street.get());
             room.setAccount(account.get());
             room.setAddress(request.getRoom().getAddress());
