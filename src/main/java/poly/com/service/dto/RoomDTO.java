@@ -25,9 +25,9 @@ public class RoomDTO {
 
     private Integer acreageMax;
 
-    private Integer longtitude;
+    private Float longtitude;
 
-    private Integer latitude;
+    private Float latitude;
 
     private Integer status;
 

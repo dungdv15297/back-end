@@ -2,6 +2,9 @@ package poly.com.service;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -23,6 +26,7 @@ import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional(rollbackFor = {
@@ -198,5 +202,10 @@ public class RoomService {
         catch (Exception e){
             throw e;
         }
+    }
+
+    public Page<Room> getPageRoom(String accountId, int page, int size) {
+        Sort sort = Sort.by("createdDate").descending();
+        return roomRepository.findByAccount_Id(accountId, PageRequest.of(page, size, sort));
     }
 }
