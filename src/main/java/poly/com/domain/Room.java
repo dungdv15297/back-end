@@ -44,10 +44,10 @@ public class Room extends AbstractAuditingEntity implements Serializable {
     private Integer acreageMax;
 
     @Column(name = "LONGITUDE")
-    private Integer longtitude;
+    private Float longtitude;
 
     @Column(name = "LATITUDE")
-    private Integer latitude;
+    private Float latitude;
 
     @ManyToOne
     @JoinColumn(name = "ACCOUNT_ID",referencedColumnName = "ACCOUNT_ID")
