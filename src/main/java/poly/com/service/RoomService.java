@@ -72,60 +72,52 @@ public class RoomService {
     }
 
     public CreateRoomResponse createRoom(CreateRoomRequest request) throws ServiceException,Exception{
-        try {
-            if(request == null){
-                throw new ServiceException("EmptyPayload");
-            }
-            if(request.getRoom() == null){
-                throw ServiceExceptionBuilder.newBuilder()
-                        .addError(new ValidationErrorResponse("room", ValidationError.NotNull))
-                        .build();
-            }
-            Optional<Room> optionalRoom = roomRepository.findByIdRoom(request.getRoom().getId());
-            if(optionalRoom.isPresent()){
-                throw ServiceExceptionBuilder.newBuilder()
-                        .addError(new ValidationErrorResponse("roomId",ValidationError.Duplicate))
-                        .build();
-            }
-            Optional<Street> street = streetRepository.findById(request.getRoom().getStreet().getId());
-            if(!street.isPresent()){
-                throw ServiceExceptionBuilder.newBuilder()
-                        .addError(new ValidationErrorResponse("streetId",ValidationError.NotNull))
-                        .build();
-            }
-            Optional<Account> account = accountRepository.findOptById(request.getRoom().getAccount().getId());
-            if(!account.isPresent()){
-                throw ServiceExceptionBuilder.newBuilder()
-                        .addError(new ValidationErrorResponse("accountId",ValidationError.NotNull))
-                        .build();
-            }
-            RoomDTO dto = request.getRoom();
-            Room room = roomMapper.toEntity(dto);
-            room.setId(UUID.randomUUID().toString());
-            room.setStreet(street.get());
-            room.setAccount(account.get());
-            room.setAddress(request.getRoom().getAddress());
-            room.setDescription(request.getRoom().getDescription());
-            room.setPriceMin(request.getRoom().getPriceMin());
-            room.setPriceMax(request.getRoom().getPriceMax());
-            room.setAcreageMin(request.getRoom().getAcreageMin());
-            room.setAcreageMax(request.getRoom().getAcreageMax());
-            room.setLongtitude(request.getRoom().getLongtitude());
-            room.setLatitude(request.getRoom().getLatitude());
-            room.setStatus(Status.Active);
-            room.setCreatedBy(SecurityContextHolder.getContext().getAuthentication().getName());
-            room.setLastModifiedBy(SecurityContextHolder.getContext().getAuthentication().getName());
-            CreateRoomResponse response = new CreateRoomResponse();
-            response.setRoom(roomMapper.toDto(room));
-
-            return response;
+        if(request == null){
+            throw new ServiceException("EmptyPayload");
         }
-        catch (ServiceException e){
-            throw e;
+        if(request.getRoom() == null){
+            throw ServiceExceptionBuilder.newBuilder()
+                    .addError(new ValidationErrorResponse("room", ValidationError.NotNull))
+                    .build();
         }
-        catch (Exception e){
-            throw e;
+        Optional<Room> optionalRoom = roomRepository.findByIdRoom(request.getRoom().getId());
+        if(optionalRoom.isPresent()){
+            throw ServiceExceptionBuilder.newBuilder()
+                    .addError(new ValidationErrorResponse("roomId",ValidationError.Duplicate))
+                    .build();
         }
+        Optional<Street> street = streetRepository.findById(request.getRoom().getStreet().getId());
+        if(!street.isPresent()){
+            throw ServiceExceptionBuilder.newBuilder()
+                    .addError(new ValidationErrorResponse("streetId",ValidationError.NotNull))
+                    .build();
+        }
+        Optional<Account> account = accountRepository.findOptById(request.getRoom().getAccount().getId());
+        if(!account.isPresent()){
+            throw ServiceExceptionBuilder.newBuilder()
+                    .addError(new ValidationErrorResponse("accountId",ValidationError.NotNull))
+                    .build();
+        }
+        RoomDTO dto = request.getRoom();
+        Room room = roomMapper.toEntity(dto);
+        room.setId(UUID.randomUUID().toString());
+        room.setStreet(street.get());
+        room.setAccount(account.get());
+        room.setAddress(request.getRoom().getAddress());
+        room.setDescription(request.getRoom().getDescription());
+        room.setPriceMin(request.getRoom().getPriceMin());
+        room.setPriceMax(request.getRoom().getPriceMax());
+        room.setAcreageMin(request.getRoom().getAcreageMin());
+        room.setAcreageMax(request.getRoom().getAcreageMax());
+        room.setLongtitude(request.getRoom().getLongtitude());
+        room.setLatitude(request.getRoom().getLatitude());
+        room.setStatus(Status.Active);
+        room.setCreatedBy(SecurityContextHolder.getContext().getAuthentication().getName());
+        room.setLastModifiedBy(SecurityContextHolder.getContext().getAuthentication().getName());
+        CreateRoomResponse response = new CreateRoomResponse();
+        response.setRoom(roomMapper.toDto(room));
+        roomRepository.save(room);
+        return response;
     }
     public UpdateRoomResponse updateRoom(UpdateRoomRequest request) throws ServiceException,Exception{
         try {
