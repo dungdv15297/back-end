@@ -1,4 +1,4 @@
-package src.main.java.poly.com.config;
+package poly.com.config;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
@@ -11,11 +11,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
-import com.vnpay.common.HttpServletRequest;
+import javax.servlet.http.HttpServletRequest;
 
 public class VNPayConfig {
 	 public static String vnp_PayUrl = "http://sandbox.vnpayment.vn/paymentv2/vpcpay.html";
-	    public static String vnp_Returnurl = "http://localhost:8080/DemoVNPAY/vnpay_return.jsp";
+	    public static String vnp_Returnurl = "http://localhost:9000/about";
 	    public static String vnp_TmnCode = "HA31BWOD";	 // nháº­p MĂ£ website
 	    public static String vnp_HashSecret = "CBUZQSUGYFBIMVTYXPCCHQNDQLFGSNXZ";	// nháº­p Chuá»—i bĂ­ máº­t táº¡o checksum
 	    public static String vnp_apiUrl = "http://sandbox.vnpayment.vn/merchant_webapi/merchant.html";

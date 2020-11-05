@@ -1,87 +1,35 @@
-package src.main.java.poly.com.web.rest;
+package poly.com.web.rest;
+
+import com.fasterxml.jackson.databind.util.JSONPObject;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+import poly.com.config.VNPayConfig;
+import javax.servlet.http.HttpServletRequest;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 @RestController
 @CrossOrigin
-@RequestMapping("/api")
+@RequestMapping("/api/pay")
 public class VNPayResource {
-	 @PostMapping("/updateByUser")
-    public String updateDetail(@RequestBody AccountDetailDto param) {
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        String username = auth.getName();
-        Account account = accountRepository.findByUserName(username);
 
-        AccountDetail oldDetail = accountDetailRepository.findById(account.getId());
-
-        oldDetail.setGender(param.getGender());
-        oldDetail.setName(param.getName());
-        oldDetail.setBirthday(Instant.parse(param.getBirthday()));
-        oldDetail.setEmail(param.getEmail());
-        oldDetail.setAddress(param.getAddress());
-        oldDetail.setLastModifiedBy(username);
-        oldDetail.setLastModifiedDate(Instant.now());
-        accountDetailRepository.save(oldDetail);
-        return oldDetail.getId();
-    }
-	 
 	 @PostMapping("/checkout")
-		public String checkout(HttpServletRequest req, @CurrentUser UserPrincipal userPrincipal, ModelMap model) throws UnsupportedEncodingException {
-
-			User user = userPrincipal.getCurrentUser();
-			List<CartItem> cartItems = cartItemService.findByUser(user);
-
-			OrderWeb orderWeb = new OrderWeb();
-			orderWeb.setConsignee(req.getParameter("name"));
-			orderWeb.setConsigneePhone(req.getParameter("phone"));
-			orderWeb.setDeliveryAddress(req.getParameter("address"));
-			orderWeb.setUser(user);
-
-			String paymentMethod = req.getParameter("paymentMethod");
-			if (paymentMethod.equalsIgnoreCase(PaymentMethod.COD)) {
-				orderWeb.setPaymentMethod(PaymentMethod.COD);
-
-			} else if (paymentMethod.equalsIgnoreCase(PaymentMethod.ATM)) {
-				orderWeb.setPaymentMethod(PaymentMethod.ATM);
-			}
-			orderWebService.save(orderWeb);
-
-			long totalAmount = 0;
-			for (CartItem cartItem : cartItems) {
-				OrderWebDetail orderWebDetail = new OrderWebDetail();
-				ProductSize productSize = cartItem.getProductSize();
-				long price = productSize.getProduct().getPrice();
-				int quantity = cartItem.getQuantity();
-
-				orderWebDetail.setOrderWeb(orderWeb);
-				orderWebDetail.setProductSize(productSize);
-				orderWebDetail.setPrice(price);
-				orderWebDetail.setQuantity(quantity);
-				orderWebDetail.setTotalAmount(price * quantity);
-				orderWebDetailService.save(orderWebDetail);
-
-				totalAmount += price * quantity;
-			}
-			orderWeb.setTotalAmount(totalAmount);
-			orderWeb.setPaymentStatus(PaymentStatus.PENDING_ATM);
-			orderWeb.setDeliveryStatus(DeliveryStatus.NOT_APPROVED);
-			orderWeb = orderWebService.save(orderWeb);
-
-			if (orderWeb.getPaymentMethod().equalsIgnoreCase(PaymentMethod.COD)) {
-				orderWeb.setPaymentStatus(PaymentStatus.UNPAID);
-
-				orderWebService.save(orderWeb);
-		        cartItemService.deleteByUser(user);
-				return "redirect:/order-result/" + orderWeb.getId();
-			}
-
+		public String checkout(HttpServletRequest req) throws UnsupportedEncodingException {
+			int a = 1000000;
 	        Map<String, String> vnp_Params = new HashMap<>();
 	        vnp_Params.put("vnp_Version", "2.0.0");
 	        vnp_Params.put("vnp_Command", "pay");
 	        vnp_Params.put("vnp_TmnCode", VNPayConfig.vnp_TmnCode);
-	        vnp_Params.put("vnp_Amount", String.valueOf(totalAmount*100));
+	        vnp_Params.put("vnp_Amount", String.valueOf(a*100));
 	        vnp_Params.put("vnp_CurrCode", "VND");
 	        vnp_Params.put("vnp_BankCode", "NCB");
 	        vnp_Params.put("vnp_TxnRef", VNPayConfig.getRandomNumber(8));
-	        vnp_Params.put("vnp_OrderInfo", String.valueOf(orderWeb.getId()));
+	        vnp_Params.put("vnp_OrderInfo", "1111");
 	        vnp_Params.put("vnp_OrderType", "billpayment");
 	        vnp_Params.put("vnp_Locale", "vn");
 	        vnp_Params.put("vnp_ReturnUrl", VNPayConfig.vnp_Returnurl);
@@ -89,7 +37,7 @@ public class VNPayResource {
 	        vnp_Params.put("vnp_CreateDate", new SimpleDateFormat("yyyyMMddHHmmss").format(new Date()));
 
 	        //Build data to hash and querystring
-	        List<String> fieldNames = new ArrayList<String>(vnp_Params.keySet());
+	        List<String> fieldNames = new ArrayList<>(vnp_Params.keySet());
 	        Collections.sort(fieldNames);
 	        StringBuilder hashData = new StringBuilder();
 	        StringBuilder query = new StringBuilder();
@@ -117,11 +65,11 @@ public class VNPayResource {
 	        String vnp_SecureHash = VNPayConfig.Sha256(VNPayConfig.vnp_HashSecret + hashData.toString());
 	        queryUrl += "&vnp_SecureHashType=SHA256&vnp_SecureHash=" + vnp_SecureHash;
 	        String paymentUrl = VNPayConfig.vnp_PayUrl + "?" + queryUrl;
-	        JsonObject job = new JsonObject();
-	        job.addProperty("code", "00");
-	        job.addProperty("message", "success");
-	        job.addProperty("data", paymentUrl);
+//	        JSONPObject job = new JSONPObject();
+//	        job.addProperty("code", "00");
+//	        job.addProperty("message", "success");
+//	        job.addProperty("data", paymentUrl);
 
-	        return "redirect:" + paymentUrl;
+	        return  paymentUrl;
 		}
 }
