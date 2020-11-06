@@ -142,7 +142,7 @@ public class RoomService {
                         .build();
             }
             Optional<Room> optionalRoom = roomRepository.findByIdRoom(request.getRoom().getId());
-            if(optionalRoom.isPresent()){
+            if(!optionalRoom.isPresent()){
                 throw ServiceExceptionBuilder.newBuilder()
                         .addError(new ValidationErrorResponse("roomId",ValidationError.Duplicate))
                         .build();
@@ -178,7 +178,7 @@ public class RoomService {
 
             UpdateRoomResponse response = new UpdateRoomResponse();
             response.setRoom(roomMapper.toDto(room));
-
+            roomRepository.save(room);
             return response;
         }
         catch (ServiceException e){
@@ -190,24 +190,18 @@ public class RoomService {
     }
     public DeleteRoomResponse deleteRoom(DeleteRoomRequest request) throws ServiceException, Exception{
         try {
-            if (request == null){
-                throw new ServiceException("EmptyPayload");
-            }
-            if(request.getId() == null){
+            Optional<Room> optionalRoom = roomRepository.findByIdRoom(request.getId());
+            if(!optionalRoom.isPresent()){
                 throw ServiceExceptionBuilder.newBuilder()
                         .addError(new ValidationErrorResponse("id",ValidationError.NotNull))
                         .build();
             }
-            roomRepository.deleteByIdRoom(request.getId());
+            roomRepository.deleteByIdRoom(optionalRoom.get().getId());
             List<Room> list = roomRepository.findAll();
             DeleteRoomResponse response = new DeleteRoomResponse();
             response.setRooms(roomMapper.toDto(list));
             return response;
-        }
-        catch (ServiceException e){
-            throw e;
-        }
-        catch (Exception e){
+        } catch (Exception e){
             throw e;
         }
     }
