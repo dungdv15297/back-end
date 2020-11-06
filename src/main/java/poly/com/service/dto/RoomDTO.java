@@ -7,6 +7,8 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
+import java.time.Instant;
+
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
@@ -46,4 +48,5 @@ public class RoomDTO {
     private String title;
 
     private Integer typeOfRoom;
+
 }

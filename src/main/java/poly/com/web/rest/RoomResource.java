@@ -8,6 +8,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import poly.com.client.dto.account.room.*;
+import poly.com.client.dto.room.GetListRoomRequest;
+import poly.com.client.dto.room.GetListRoomResponse;
 import poly.com.config.common.BaseDataRequest;
 import poly.com.config.common.BaseDataResponse;
 import poly.com.config.common.exception.ServiceException;
@@ -17,6 +19,8 @@ import poly.com.service.RoomService;
 import poly.com.service.dto.RoomDTO;
 
 import java.util.List;
+
+import javax.xml.ws.Response;
 
 @RestController
 @RequestMapping("/api/room")
