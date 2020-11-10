@@ -3,6 +3,9 @@ package poly.com.service.dto;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.util.List;
 
 import java.time.Instant;
 
@@ -24,23 +27,15 @@ public class RoomDTO {
 
     private Integer acreageMax;
 
-    private String longtitude;
+    private Float longtitude;
 
-    private String latitude;
+    private Float latitude;
 
     private Integer status;
 
-    private Integer priceRangeId;
-
-    private Integer acreageRangId;
-
-    private Integer accountId;
+    private String accountId;
 
     private Integer streetId;
-
-    private PriceRageDTO priceRage;
-
-    private AcreageRangeDTO acreageRange;
 
     private AccountDTO account;
 
@@ -48,5 +43,10 @@ public class RoomDTO {
 
     private Integer upTopStatus;
 
-    private Instant lastUpTop;
+    private List<String> pictures;
+
+    private String title;
+
+    private Integer typeOfRoom;
+
 }

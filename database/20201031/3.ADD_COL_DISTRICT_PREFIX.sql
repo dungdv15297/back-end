@@ -1,0 +1,5 @@
+ALTER TABLE district
+ADD PREFIX varchar(20);
+
+ALTER TABLE district
+ALTER STATUS SET DEFAULT 1;

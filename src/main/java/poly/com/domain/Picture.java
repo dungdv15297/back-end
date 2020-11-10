@@ -3,12 +3,10 @@ package poly.com.domain;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.ValueGenerationType;
 import poly.com.config.common.domain.AbstractAuditingEntity;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.io.Serializable;
 import java.time.Instant;
 
@@ -22,14 +20,24 @@ public class Picture extends AbstractAuditingEntity implements Serializable {
 
     @Id
     @Column(name = "PICTURE_ID")
+    @GeneratedValue(strategy = GenerationType.SEQUENCE,generator = "pictureSeq")
+    @SequenceGenerator(name = "pictureSeq",sequenceName = "graduation_pictureSeq",allocationSize = 1)
     private Integer id;
 
-    @Column(name = "ROOM_ID")
-    private String roomId;
+    @ManyToOne
+    @JoinColumn(name = "ROOM_ID",referencedColumnName = "ROOM_ID")
+    private Room room;
 
     @Column(name = "SRC")
     private String src;
 
     @Column(name = "STATUS")
     private Integer status;
+
+    @Column(name ="name")
+    private String name;
+
+    @Column(name = "type")
+    private String type;
+
 }

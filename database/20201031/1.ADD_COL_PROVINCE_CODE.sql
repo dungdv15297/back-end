@@ -1,0 +1,5 @@
+ALTER TABLE province
+ADD CODE varchar(10);
+
+ALTER TABLE province
+ALTER STATUS SET DEFAULT 1;

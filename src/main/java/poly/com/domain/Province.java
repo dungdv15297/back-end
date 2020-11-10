@@ -5,11 +5,9 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import poly.com.config.common.domain.AbstractAuditingEntity;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.io.Serializable;
+import java.util.List;
 
 @Data
 @AllArgsConstructor
@@ -28,4 +26,7 @@ public class Province extends AbstractAuditingEntity implements Serializable {
 
     @Column(name = "STATUS")
     private Integer status;
+
+    @Column(name = "CODE")
+    private String code;
 }

@@ -5,10 +5,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import poly.com.config.common.domain.AbstractAuditingEntity;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.io.Serializable;
 import java.time.Instant;
 
@@ -24,12 +21,16 @@ public class District extends AbstractAuditingEntity implements Serializable {
     @Column(name = "DISTRICT_ID")
     private Integer id;
 
-    @Column(name = "PROVINCE_ID")
-    private Integer provinceId;
-
     @Column(name = "NAME")
     private String name;
 
+    @Column(name = "PREFIX")
+    private String prefix;
+
     @Column(name = "STATUS")
     private Integer status;
+
+    @ManyToOne
+    @JoinColumn(name = "PROVINCE_ID", referencedColumnName = "PROVINCE_ID")
+    private Province province;
 }
