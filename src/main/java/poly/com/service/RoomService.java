@@ -15,9 +15,12 @@ import poly.com.client.dto.account.room.*;
 import poly.com.client.dto.room.FilterRoomRequest;
 import poly.com.client.dto.room.PagingRoomRequest;
 import poly.com.client.dto.room.PagingRoomResponse;
+import poly.com.client.dto.room.GetListRoomRequest;
+import poly.com.client.dto.room.GetListRoomResponse;
 import poly.com.config.Status;
 import poly.com.config.common.ValidationErrorResponse;
 import poly.com.config.common.exception.ServiceException;
+import poly.com.config.common.security.SecurityUtils;
 import poly.com.config.common.util.ServiceExceptionBuilder;
 import poly.com.config.common.validationError.ValidationError;
 import poly.com.domain.*;
@@ -103,6 +106,7 @@ public class RoomService {
                         .build();
             }
             Optional<Account> account = accountRepository.findOptById(request.getRoom().getAccount().getId());
+
             if(!account.isPresent()){
                 throw ServiceExceptionBuilder.newBuilder()
                         .addError(new ValidationErrorResponse("accountId",ValidationError.NotNull))
@@ -121,12 +125,16 @@ public class RoomService {
             room.setAcreageMax(request.getRoom().getAcreageMax());
             room.setLongtitude(request.getRoom().getLongtitude());
             room.setLatitude(request.getRoom().getLatitude());
+            room.setCreatedDate(Instant.now());
+            room.setCreatedBy(SecurityUtils.getCurrentUserLogin().get());
+            room.setLastModifiedDate(Instant.now());
+            room.setLastModifiedBy(SecurityUtils.getCurrentUserLogin().get());
             room.setStatus(Status.Active);
             room.setCreatedBy(SecurityContextHolder.getContext().getAuthentication().getName());
             room.setLastModifiedBy(SecurityContextHolder.getContext().getAuthentication().getName());
             CreateRoomResponse response = new CreateRoomResponse();
             response.setRoom(roomMapper.toDto(room));
-
+            roomRepository.save(room);
             return response;
         }
         catch (ServiceException e){
@@ -158,7 +166,9 @@ public class RoomService {
                         .addError(new ValidationErrorResponse("streetId",ValidationError.NotNull))
                         .build();
             }
+
             Optional<Account> account = accountRepository.findOptById(request.getRoom().getAccount().getId());
+
             if(!account.isPresent()){
                 throw ServiceExceptionBuilder.newBuilder()
                         .addError(new ValidationErrorResponse("accountId",ValidationError.NotNull))
@@ -180,6 +190,7 @@ public class RoomService {
             room.setStatus(Status.Active);
             room.setLastModifiedBy(SecurityContextHolder.getContext().getAuthentication().getName());
             room.setLastModifiedDate(Instant.now());
+
 
             UpdateRoomResponse response = new UpdateRoomResponse();
             response.setRoom(roomMapper.toDto(room));

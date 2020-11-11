@@ -49,6 +49,7 @@ public class Room extends AbstractAuditingEntity implements Serializable {
     @Column(name = "LATITUDE")
     private Float latitude;
 
+
     @ManyToOne
     @JoinColumn(name = "ACCOUNT_ID",referencedColumnName = "ACCOUNT_ID")
     private Account account;
@@ -60,7 +61,7 @@ public class Room extends AbstractAuditingEntity implements Serializable {
     @Column(name = "STATUS")
     private Integer status;
 
-    @Column(name = "UP_TOP_STATUS ")
+    @Column(name = "UP_TOP_STATUS")
     private Integer upTopStatus;
 
     @Column(name = "LAST_UP_TOP")
