@@ -4,11 +4,17 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
+import poly.com.Exception.RoomNotFoundException;
 import poly.com.client.dto.account.room.*;
+import poly.com.client.dto.room.FilterRoomRequest;
+import poly.com.client.dto.room.PagingRoomRequest;
+import poly.com.client.dto.room.PagingRoomResponse;
 import poly.com.config.Status;
 import poly.com.config.common.ValidationErrorResponse;
 import poly.com.config.common.exception.ServiceException;
@@ -26,7 +32,6 @@ import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 @Service
 @Transactional(rollbackFor = {
@@ -209,5 +214,40 @@ public class RoomService {
     public Page<Room> getPageRoom(String accountId, int page, int size) {
         Sort sort = Sort.by("createdDate").descending();
         return roomRepository.findByAccount_Id(accountId, PageRequest.of(page, size, sort));
+    }
+    public PagingRoomResponse getListRoomWithParam(PagingRoomRequest request){
+        try {
+            if(request == null){
+                throw new RoomNotFoundException("payloadNotEmpty");
+            }
+            if(request.getRoom() == null){
+                throw  new RoomNotFoundException("room not found");
+            }
+            if(request.getPageNumber() < 0){
+                request.setPageNumber(1);
+            }
+            if(request.getPageSize() < 0){
+                request.setPageSize(1);
+            }
+            Pageable pageable = PageRequest.of(request.getPageNumber() - 1,
+                    request.getPageSize(),
+                    Sort.by(Sort.Direction.ASC, StringUtils.isEmpty(request.getOrderBy()) ? "id" : request.getOrderBy()));
+            FilterRoomRequest searchParams = request.getRoom();
+            Page<RoomDTO> page = roomRepository.finByRoomWithParam(pageable,
+                    searchParams.getAcreageMin() !=null ? searchParams.getAcreageMin() : null,
+                    searchParams.getAcreageMax() !=null ? searchParams.getAcreageMax() : null,
+                    searchParams.getPriceMin() !=null ? searchParams.getPriceMin() : null,
+                    searchParams.getPriceMax() !=null ? searchParams.getPriceMax() : null,
+                    searchParams.getStreet().getName() !=null ? searchParams.getStreet().getName() : null,
+                    searchParams.getDistrict().getName() !=null ? searchParams.getDistrict().getName() : null
+                    )
+                    .map(roomMapper :: toDto);
+            PagingRoomResponse response = new PagingRoomResponse();
+            response.setPage(page);
+            return response;
+        }
+        catch (Exception e){
+            throw e;
+        }
     }
 }

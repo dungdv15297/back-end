@@ -24,4 +24,6 @@ public class StreetDTO implements Serializable {
     private String prefix;
 
     private Integer provinceId;
+
+    private DistrictDto district;
 }

@@ -8,6 +8,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import poly.com.client.dto.account.room.*;
+import poly.com.client.dto.room.PagingRoomRequest;
+import poly.com.client.dto.room.PagingRoomResponse;
 import poly.com.config.common.BaseDataRequest;
 import poly.com.config.common.BaseDataResponse;
 import poly.com.config.common.exception.ServiceException;
@@ -88,6 +90,18 @@ public class RoomResource {
     @GetMapping("getPageRoom")
     public Page<Room> getPageRoom(@RequestParam("accountId") String accountId, @RequestParam("page") int page, @RequestParam("size") int size) {
         return roomService.getPageRoom(accountId, page, size);
+    }
+    @PostMapping("search-room")
+    public ResponseEntity<PagingRoomResponse> getRoomByParams(
+            @RequestBody PagingRoomRequest request
+            ){
+        try {
+            PagingRoomResponse response = roomService.getListRoomWithParam(request);
+            return ResponseUtil.wrap(response);
+        }
+        catch (Exception e){
+            return ResponseUtil.generateErrorResponse(e);
+        }
     }
 }
 

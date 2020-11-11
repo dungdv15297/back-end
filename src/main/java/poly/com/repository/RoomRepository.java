@@ -22,4 +22,25 @@ public interface RoomRepository extends JpaRepository<Room,Integer> {
 
     @Query("from Room r where r.account.id =:id")
     Page<Room> findByAccount_Id(@Param("id") String id, Pageable pageable);
+
+    @Query("select r from Room r inner join AcreageRange ar " +
+            "on r.acreageRange.id = ar.id " +
+            "inner join Street st on " +
+            "r.street.id = st.id " +
+            "inner join District  dt on dt.id = st.district.id where 1=1 " +
+            "and(r.acreageMin >=:acreageMin or :acreageMin is null) " +
+            "and(r.acreageMax <=:acreageMax or :acreageMax is null)  " +
+            "and(r.priceMin >=:priceMin or :priceMin is null)  " +
+            "and(r.priceMax <=:priceMax or :priceMax is null) " +
+            "and(lower(st.name ) like concat('%',:name,'%') or :name is null ) " +
+            "and(lower(dt.name) like concat('%',:districtName,'%') or :districtName is null ) " +
+            "group by r.createdDate order by r.createdDate asc ")
+    Page<Room> finByRoomWithParam(Pageable pageable,
+                                  @Param("acreageMin") Integer acreageMin,
+                                  @Param("acreageMax") Integer acreageMax,
+                                  @Param("priceMin") Integer priceMin,
+                                  @Param("priceMax") Integer priceMax,
+                                  @Param("name") String name,
+                                  @Param("districtName") String districtName
+                                  );
 }
