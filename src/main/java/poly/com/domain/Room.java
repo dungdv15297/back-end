@@ -54,6 +54,10 @@ public class Room extends AbstractAuditingEntity implements Serializable {
     @JoinColumn(name = "ACCOUNT_ID",referencedColumnName = "ACCOUNT_ID")
     private Account account;
 
+    @ManyToOne
+    @JoinColumn(name = "acreage_range_id",referencedColumnName = "acreage_range_id")
+    private AcreageRange acreageRange;
+
     @Column(name = "STATUS")
     private Integer status;
 
