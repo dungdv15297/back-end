@@ -1,10 +1,9 @@
 package poly.com.web.rest;
 
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import poly.com.client.dto.accountDetail.PaymentRequest;
 import poly.com.config.VNPayConfig;
+import sun.management.snmp.jvminstr.JvmThreadInstanceEntryImpl;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.UnsupportedEncodingException;
@@ -19,13 +18,14 @@ import java.util.*;
 public class VNPayResource {
 
     @PostMapping("/checkout")
-    public String checkout(HttpServletRequest req) throws UnsupportedEncodingException {
-        int a = 1000000;
+    public String checkout(HttpServletRequest req ,  @RequestBody  PaymentRequest param) throws UnsupportedEncodingException {
+        Integer totalAmount = Integer.parseInt(param.getAmount())*100;
+        String bank = param.getBank();
         Map<String, String> vnp_Params = new HashMap<>();
         vnp_Params.put("vnp_Version", "2.0.0");
         vnp_Params.put("vnp_Command", "pay");
         vnp_Params.put("vnp_TmnCode", VNPayConfig.vnp_TmnCode);
-        vnp_Params.put("vnp_Amount", String.valueOf(a * 100));
+        vnp_Params.put("vnp_Amount", totalAmount.toString());
         vnp_Params.put("vnp_CurrCode", "VND");
         vnp_Params.put("vnp_BankCode", "NCB");
         vnp_Params.put("vnp_TxnRef", VNPayConfig.getRandomNumber(8));
@@ -72,4 +72,7 @@ public class VNPayResource {
 
         return paymentUrl;
     }
+
 }
+
+

@@ -43,6 +43,7 @@ public class AccountDetailResource {
         oldDetail.setAddress(param.getAddress());
         oldDetail.setLastModifiedBy(username);
         oldDetail.setLastModifiedDate(Instant.now());
+        oldDetail.setBalance(param.getBalance());
         accountDetailRepository.save(oldDetail);
         return oldDetail.getId();
     }
