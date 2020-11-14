@@ -35,17 +35,17 @@ public class RoomDTO {
 
     private String accountId;
 
-    private Integer streetId;
+    private Integer wardId;
 
     private AccountDTO account;
-
-    private StreetDTO street;
 
     private Integer upTopStatus;
 
     private List<String> pictures;
 
     private String title;
+
+    private Integer type;
 
     private Integer typeOfRoom;
 

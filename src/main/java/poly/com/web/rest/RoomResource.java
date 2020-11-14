@@ -1,6 +1,5 @@
 package poly.com.web.rest;
 
-import lombok.Data;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
@@ -10,19 +9,12 @@ import org.springframework.web.multipart.MultipartFile;
 import poly.com.client.dto.account.room.*;
 import poly.com.client.dto.room.PagingRoomRequest;
 import poly.com.client.dto.room.PagingRoomResponse;
-import poly.com.client.dto.room.GetListRoomRequest;
-import poly.com.client.dto.room.GetListRoomResponse;
 import poly.com.config.common.BaseDataRequest;
 import poly.com.config.common.BaseDataResponse;
 import poly.com.config.common.exception.ServiceException;
 import poly.com.config.common.util.ResponseUtil;
 import poly.com.domain.Room;
 import poly.com.service.RoomService;
-import poly.com.service.dto.RoomDTO;
-
-import java.util.List;
-
-import javax.xml.ws.Response;
 
 @RestController
 @RequestMapping("/api/room")
@@ -52,11 +44,6 @@ public class RoomResource {
         catch (Exception e){
             return ResponseUtil.generateErrorResponse(e);
         }
-    }
-
-    @PostMapping("demo")
-    public void uploadFile(@RequestBody MultipartFile files) {
-        files.getName();
     }
 
     @PostMapping("update-room")

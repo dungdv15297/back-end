@@ -6,6 +6,7 @@ import poly.com.domain.Room;
 import poly.com.service.dto.RoomDTO;
 
 @Mapper(componentModel = "spring",uses = {})
+
 public interface RoomMapper extends EntityMapper<RoomDTO, Room>{
 
     default Room fromId(String id){

@@ -21,10 +21,6 @@ public class Room extends AbstractAuditingEntity implements Serializable {
     @Column(name = "ROOM_ID")
     private String id;
 
-    @ManyToOne
-    @JoinColumn(name = "STREET_ID",referencedColumnName = "STREET_ID")
-    private Street street;
-
     @Column(name = "ADDRESS")
     private String address;
 
@@ -49,14 +45,13 @@ public class Room extends AbstractAuditingEntity implements Serializable {
     @Column(name = "LATITUDE")
     private Float latitude;
 
-
     @ManyToOne
     @JoinColumn(name = "ACCOUNT_ID",referencedColumnName = "ACCOUNT_ID")
     private Account account;
 
     @ManyToOne
-    @JoinColumn(name = "acreage_range_id",referencedColumnName = "acreage_range_id")
-    private AcreageRange acreageRange;
+    @JoinColumn(name = "WARD_ID",referencedColumnName = "ID")
+    private Ward ward;
 
     @Column(name = "STATUS")
     private Integer status;

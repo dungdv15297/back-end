@@ -2,6 +2,7 @@ package poly.com.service;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -43,44 +44,19 @@ import java.util.UUID;
 })
 public class RoomService {
     private final Logger log = LoggerFactory.getLogger(this.getClass());
-    private final RoomRepository roomRepository;
 
-    private final RoomMapper roomMapper;
+    @Autowired
+    private RoomRepository roomRepository;
 
-    private final PriceRangeRepository priceRangeRepository;
+    private RoomMapper roomMapper;
 
-    private final PriceRageMapper priceRageMapper;
+    @Autowired
+    private WardRepository wardRepository;
+    @Autowired
+    private AccountRepository accountRepository;
 
-    private final AcreageRageRepository acreageRageRepository;
-
-    private final AcreageRageMapper acreageRageMapper;
-
-    private final StreetRepository streetRepository;
-
-    private final StreetMapper streetMapper;
-
-    private  final AccountRepository accountRepository;
-
-    public RoomService(
-            RoomRepository roomRepository,
-            RoomMapper roomMapper,
-            PriceRangeRepository priceRangeRepository,
-            PriceRageMapper priceRageMapper,
-            AcreageRageRepository acreageRageRepository,
-            AcreageRageMapper acreageRageMapper,
-            StreetRepository streetRepository,
-            StreetMapper streetMapper,
-            AccountRepository accountRepository
-    ){
-        this.roomRepository = roomRepository;
+    public RoomService(RoomMapper roomMapper) {
         this.roomMapper = roomMapper;
-        this.priceRangeRepository = priceRangeRepository;
-        this.priceRageMapper = priceRageMapper;
-        this.acreageRageRepository=acreageRageRepository;
-        this.acreageRageMapper= acreageRageMapper;
-        this.streetRepository = streetRepository;
-        this.streetMapper = streetMapper;
-        this.accountRepository =  accountRepository;
     }
 
     public CreateRoomResponse createRoom(CreateRoomRequest request) throws ServiceException,Exception{
@@ -99,10 +75,10 @@ public class RoomService {
                         .addError(new ValidationErrorResponse("roomId",ValidationError.Duplicate))
                         .build();
             }
-            Optional<Street> street = streetRepository.findById(request.getRoom().getStreet().getId());
-            if(!street.isPresent()){
+            Optional<Ward> ward = wardRepository.findById(request.getRoom().getWardId());
+            if(!ward.isPresent()){
                 throw ServiceExceptionBuilder.newBuilder()
-                        .addError(new ValidationErrorResponse("streetId",ValidationError.NotNull))
+                        .addError(new ValidationErrorResponse("wardId",ValidationError.NotNull))
                         .build();
             }
             Optional<Account> account = accountRepository.findOptById(request.getRoom().getAccount().getId());
@@ -115,7 +91,7 @@ public class RoomService {
             RoomDTO dto = request.getRoom();
             Room room = roomMapper.toEntity(dto);
             room.setId(UUID.randomUUID().toString());
-            room.setStreet(street.get());
+            room.setWard(ward.get());
             room.setAccount(account.get());
             room.setAddress(request.getRoom().getAddress());
             room.setDescription(request.getRoom().getDescription());
@@ -126,16 +102,18 @@ public class RoomService {
             room.setLongtitude(request.getRoom().getLongtitude());
             room.setLatitude(request.getRoom().getLatitude());
             room.setCreatedDate(Instant.now());
+            room.setTypeOfRoom(request.getRoom().getTypeOfRoom());
             room.setCreatedBy(SecurityUtils.getCurrentUserLogin().get());
             room.setLastModifiedDate(Instant.now());
             room.setLastModifiedBy(SecurityUtils.getCurrentUserLogin().get());
             room.setStatus(Status.Active);
             room.setCreatedBy(SecurityContextHolder.getContext().getAuthentication().getName());
             room.setLastModifiedBy(SecurityContextHolder.getContext().getAuthentication().getName());
-            CreateRoomResponse response = new CreateRoomResponse();
-            response.setRoom(roomMapper.toDto(room));
-            roomRepository.save(room);
-            return response;
+
+            Room domain = roomRepository.save(room);
+            RoomDTO roomDto = new RoomDTO();
+            roomDto.setId(domain.getId());
+            return new CreateRoomResponse(roomDto);
         }
         catch (ServiceException e){
             throw e;
@@ -160,8 +138,8 @@ public class RoomService {
                         .addError(new ValidationErrorResponse("roomId",ValidationError.Duplicate))
                         .build();
             }
-            Optional<Street> street = streetRepository.findById(request.getRoom().getStreet().getId());
-            if(!street.isPresent()){
+            Optional<Ward> ward = wardRepository.findById(request.getRoom().getWardId());
+            if(!ward.isPresent()){
                 throw ServiceExceptionBuilder.newBuilder()
                         .addError(new ValidationErrorResponse("streetId",ValidationError.NotNull))
                         .build();
@@ -177,7 +155,7 @@ public class RoomService {
             RoomDTO dto = request.getRoom();
             Room room = roomMapper.toEntity(dto);
             room.setId(request.getRoom().getId());
-            room.setStreet(street.get());
+            room.setWard(ward.get());
             room.setAccount(account.get());
             room.setAddress(request.getRoom().getAddress());
             room.setDescription(request.getRoom().getDescription());
