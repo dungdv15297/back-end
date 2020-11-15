@@ -15,6 +15,8 @@ import java.time.Instant;
 public class RoomDTO {
     private String id;
 
+    private Boolean isUptop;
+
     private String address;
 
     private String description;
@@ -48,5 +50,23 @@ public class RoomDTO {
     private Integer type;
 
     private Integer typeOfRoom;
+
+    private String image;
+
+    private Instant lastUpTop;
+
+    private String createdBy;
+
+    private String phone;
+
+    private WardDto ward;
+
+    private ProvinceDto province;
+
+    private DistrictDto district;
+
+    private String createdDate;
+
+    private String updatedDate;
 
 }

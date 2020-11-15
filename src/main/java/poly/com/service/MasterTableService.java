@@ -16,6 +16,7 @@ import poly.com.repository.AcreageRageRepository;
 import poly.com.repository.PriceRangeRepository;
 
 import java.time.Instant;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -32,9 +33,40 @@ public class MasterTableService {
         this.acreageRageRepository = acreageRageRepository;
     }
 
+    public Boolean deleteAcreaRange(Integer id) {
+        try {
+            Optional<AcreageRange> acre = acreageRageRepository.findById(id);
+            if (acre.isPresent()) {
+                acreageRageRepository.delete(acre.get());
+                return true;
+            }
+            return false;
+        } catch (Exception e) {
+            throw e;
+        }
+    }
+
+    public Boolean deletePriceRange(Integer id) {
+        try {
+            Optional<PriceRange> price = priceRangeRepository.findById(id);
+            if (price.isPresent()) {
+                priceRangeRepository.delete(price.get());
+                return true;
+            }
+            return false;
+        } catch (Exception e) {
+            throw e;
+        }
+    }
+
     public Page<PriceRange> getAllPrice(int page, int size) {
         Sort sort = Sort.by("createdDate").ascending();
         return priceRangeRepository.findAll(PageRequest.of(page, size, sort));
+    }
+
+    public List<PriceRange> getAllPrice() {
+        Sort sort = Sort.by("min").ascending().and(Sort.by("max").ascending());
+        return priceRangeRepository.findAll(sort);
     }
 
     public Boolean addPrice(MasterTableRequest params) {
@@ -83,6 +115,10 @@ public class MasterTableService {
 
     public Page<AcreageRange> getAllAcreage(int page, int size) {
         return acreageRageRepository.findAll(PageRequest.of(page, size, Sort.by("createdDate").ascending()));
+    }
+
+    public List<AcreageRange> getAllAcreage() {
+        return acreageRageRepository.findAll(Sort.by("min").ascending().and(Sort.by("max").ascending()));
     }
 
     public Boolean addAcreage(MasterTableRequest params) {

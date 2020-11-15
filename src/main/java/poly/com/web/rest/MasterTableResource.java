@@ -13,6 +13,8 @@ import poly.com.domain.AcreageRange;
 import poly.com.domain.PriceRange;
 import poly.com.service.MasterTableService;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/api/master")
 @CrossOrigin
@@ -23,9 +25,14 @@ public class MasterTableResource {
     @Autowired
     private MasterTableService masterTableService;
 
-    @GetMapping("/price-range/getAll")
-    public Page<PriceRange> getAllPrice(@RequestParam("page") int page, @RequestParam("size") int size) {
+    @GetMapping("/price-range/getPage")
+    public Page<PriceRange> getAllPricePage(@RequestParam("page") int page, @RequestParam("size") int size) {
         return masterTableService.getAllPrice(page, size);
+    }
+
+    @GetMapping("/price-range/getAll")
+    public List<PriceRange> getAllPrice() {
+        return masterTableService.getAllPrice();
     }
 
     @PostMapping("/price-range/save")
@@ -55,10 +62,20 @@ public class MasterTableResource {
         return ResponseEntity.badRequest().body(false);
     }
 
+    @PostMapping("/price-range/delete")
+    public Boolean deletePrice(@RequestBody Integer id) {
+        return masterTableService.deletePriceRange(id);
+    }
+
+
+    @GetMapping("/acreage-range/getPage")
+    public Page<AcreageRange> getAllAcreagePage(@RequestParam("page") int page, @RequestParam("size") int size) {
+        return masterTableService.getAllAcreage(page, size);
+    }
 
     @GetMapping("/acreage-range/getAll")
-    public Page<AcreageRange> getAllAcreage(@RequestParam("page") int page, @RequestParam("size") int size) {
-        return masterTableService.getAllAcreage(page, size);
+    public List<AcreageRange> getAllAcreage() {
+        return masterTableService.getAllAcreage();
     }
 
     @PostMapping("/acreage-range/save")
@@ -77,6 +94,11 @@ public class MasterTableResource {
             return ResponseEntity.ok(true);
         }
         return ResponseEntity.badRequest().body(false);
+    }
+
+    @PostMapping("/acreage-range/delete")
+    public Boolean deleteAcreage(@RequestBody Integer id) {
+        return masterTableService.deleteAcreaRange(id);
     }
 
     @PostMapping("/acreage-range/active")

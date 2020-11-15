@@ -26,16 +26,19 @@ import poly.com.config.common.util.ServiceExceptionBuilder;
 import poly.com.config.common.validationError.ValidationError;
 import poly.com.domain.*;
 import poly.com.repository.*;
-import poly.com.service.dto.RoomDTO;
+import poly.com.service.dto.*;
 import poly.com.service.mapper.AcreageRageMapper;
 import poly.com.service.mapper.PriceRageMapper;
 import poly.com.service.mapper.RoomMapper;
 import poly.com.service.mapper.StreetMapper;
 
+import javax.swing.text.html.Option;
+import java.time.Duration;
 import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional(rollbackFor = {
@@ -55,37 +58,49 @@ public class RoomService {
     @Autowired
     private AccountRepository accountRepository;
 
+    @Autowired
+    private PriceRangeRepository priceRangeRepository;
+
+    @Autowired
+    private AcreageRageRepository acreageRageRepository;
+
+    @Autowired
+    private PictureRepository pictureRepository;
+
+    @Autowired
+    private AccountDetailRepository accountDetailRepository;
+
     public RoomService(RoomMapper roomMapper) {
         this.roomMapper = roomMapper;
     }
 
-    public CreateRoomResponse createRoom(CreateRoomRequest request) throws ServiceException,Exception{
+    public CreateRoomResponse createRoom(CreateRoomRequest request) throws ServiceException, Exception {
         try {
-            if(request == null){
+            if (request == null) {
                 throw new ServiceException("EmptyPayload");
             }
-            if(request.getRoom() == null){
+            if (request.getRoom() == null) {
                 throw ServiceExceptionBuilder.newBuilder()
                         .addError(new ValidationErrorResponse("room", ValidationError.NotNull))
                         .build();
             }
             Optional<Room> optionalRoom = roomRepository.findByIdRoom(request.getRoom().getId());
-            if(optionalRoom.isPresent()){
+            if (optionalRoom.isPresent()) {
                 throw ServiceExceptionBuilder.newBuilder()
-                        .addError(new ValidationErrorResponse("roomId",ValidationError.Duplicate))
+                        .addError(new ValidationErrorResponse("roomId", ValidationError.Duplicate))
                         .build();
             }
             Optional<Ward> ward = wardRepository.findById(request.getRoom().getWardId());
-            if(!ward.isPresent()){
+            if (!ward.isPresent()) {
                 throw ServiceExceptionBuilder.newBuilder()
-                        .addError(new ValidationErrorResponse("wardId",ValidationError.NotNull))
+                        .addError(new ValidationErrorResponse("wardId", ValidationError.NotNull))
                         .build();
             }
             Optional<Account> account = accountRepository.findOptById(request.getRoom().getAccount().getId());
 
-            if(!account.isPresent()){
+            if (!account.isPresent()) {
                 throw ServiceExceptionBuilder.newBuilder()
-                        .addError(new ValidationErrorResponse("accountId",ValidationError.NotNull))
+                        .addError(new ValidationErrorResponse("accountId", ValidationError.NotNull))
                         .build();
             }
             RoomDTO dto = request.getRoom();
@@ -114,42 +129,41 @@ public class RoomService {
             RoomDTO roomDto = new RoomDTO();
             roomDto.setId(domain.getId());
             return new CreateRoomResponse(roomDto);
-        }
-        catch (ServiceException e){
+        } catch (ServiceException e) {
             throw e;
-        }
-        catch (Exception e){
+        } catch (Exception e) {
             throw e;
         }
     }
-    public UpdateRoomResponse updateRoom(UpdateRoomRequest request) throws ServiceException,Exception{
+
+    public UpdateRoomResponse updateRoom(UpdateRoomRequest request) throws ServiceException, Exception {
         try {
-            if(request == null){
+            if (request == null) {
                 throw new ServiceException("EmptyPayload");
             }
-            if(request.getRoom() == null){
+            if (request.getRoom() == null) {
                 throw ServiceExceptionBuilder.newBuilder()
                         .addError(new ValidationErrorResponse("room", ValidationError.NotNull))
                         .build();
             }
             Optional<Room> optionalRoom = roomRepository.findByIdRoom(request.getRoom().getId());
-            if(!optionalRoom.isPresent()){
+            if (!optionalRoom.isPresent()) {
                 throw ServiceExceptionBuilder.newBuilder()
-                        .addError(new ValidationErrorResponse("roomId",ValidationError.Duplicate))
+                        .addError(new ValidationErrorResponse("roomId", ValidationError.Duplicate))
                         .build();
             }
             Optional<Ward> ward = wardRepository.findById(request.getRoom().getWardId());
-            if(!ward.isPresent()){
+            if (!ward.isPresent()) {
                 throw ServiceExceptionBuilder.newBuilder()
-                        .addError(new ValidationErrorResponse("streetId",ValidationError.NotNull))
+                        .addError(new ValidationErrorResponse("streetId", ValidationError.NotNull))
                         .build();
             }
 
             Optional<Account> account = accountRepository.findOptById(request.getRoom().getAccount().getId());
 
-            if(!account.isPresent()){
+            if (!account.isPresent()) {
                 throw ServiceExceptionBuilder.newBuilder()
-                        .addError(new ValidationErrorResponse("accountId",ValidationError.NotNull))
+                        .addError(new ValidationErrorResponse("accountId", ValidationError.NotNull))
                         .build();
             }
             RoomDTO dto = request.getRoom();
@@ -174,20 +188,19 @@ public class RoomService {
             response.setRoom(roomMapper.toDto(room));
             roomRepository.save(room);
             return response;
-        }
-        catch (ServiceException e){
+        } catch (ServiceException e) {
             throw e;
-        }
-        catch (Exception e){
+        } catch (Exception e) {
             throw e;
         }
     }
-    public DeleteRoomResponse deleteRoom(DeleteRoomRequest request) throws ServiceException, Exception{
+
+    public DeleteRoomResponse deleteRoom(DeleteRoomRequest request) throws ServiceException, Exception {
         try {
             Optional<Room> optionalRoom = roomRepository.findByIdRoom(request.getId());
-            if(!optionalRoom.isPresent()){
+            if (!optionalRoom.isPresent()) {
                 throw ServiceExceptionBuilder.newBuilder()
-                        .addError(new ValidationErrorResponse("id",ValidationError.NotNull))
+                        .addError(new ValidationErrorResponse("id", ValidationError.NotNull))
                         .build();
             }
             roomRepository.deleteByIdRoom(optionalRoom.get().getId());
@@ -195,7 +208,7 @@ public class RoomService {
             DeleteRoomResponse response = new DeleteRoomResponse();
             response.setRooms(roomMapper.toDto(list));
             return response;
-        } catch (Exception e){
+        } catch (Exception e) {
             throw e;
         }
     }
@@ -204,18 +217,19 @@ public class RoomService {
         Sort sort = Sort.by("createdDate").descending();
         return roomRepository.findByAccount_Id(accountId, PageRequest.of(page, size, sort));
     }
-    public PagingRoomResponse getListRoomWithParam(PagingRoomRequest request){
+
+    public PagingRoomResponse getListRoomWithParam(PagingRoomRequest request) {
         try {
-            if(request == null){
+            if (request == null) {
                 throw new RoomNotFoundException("payloadNotEmpty");
             }
-            if(request.getRoom() == null){
-                throw  new RoomNotFoundException("room not found");
+            if (request.getRoom() == null) {
+                throw new RoomNotFoundException("room not found");
             }
-            if(request.getPageNumber() < 0){
+            if (request.getPageNumber() < 0) {
                 request.setPageNumber(1);
             }
-            if(request.getPageSize() < 0){
+            if (request.getPageSize() < 0) {
                 request.setPageSize(1);
             }
             Pageable pageable = PageRequest.of(request.getPageNumber() - 1,
@@ -223,20 +237,74 @@ public class RoomService {
                     Sort.by(Sort.Direction.ASC, StringUtils.isEmpty(request.getOrderBy()) ? "id" : request.getOrderBy()));
             FilterRoomRequest searchParams = request.getRoom();
             Page<RoomDTO> page = roomRepository.finByRoomWithParam(pageable,
-                    searchParams.getAcreageMin() !=null ? searchParams.getAcreageMin() : null,
-                    searchParams.getAcreageMax() !=null ? searchParams.getAcreageMax() : null,
-                    searchParams.getPriceMin() !=null ? searchParams.getPriceMin() : null,
-                    searchParams.getPriceMax() !=null ? searchParams.getPriceMax() : null,
-                    searchParams.getStreet().getName() !=null ? searchParams.getStreet().getName() : null,
-                    searchParams.getDistrict().getName() !=null ? searchParams.getDistrict().getName() : null
-                    )
-                    .map(roomMapper :: toDto);
+                    searchParams.getAcreageMin() != null ? searchParams.getAcreageMin() : null,
+                    searchParams.getAcreageMax() != null ? searchParams.getAcreageMax() : null,
+                    searchParams.getPriceMin() != null ? searchParams.getPriceMin() : null,
+                    searchParams.getPriceMax() != null ? searchParams.getPriceMax() : null,
+                    searchParams.getStreet().getName() != null ? searchParams.getStreet().getName() : null,
+                    searchParams.getDistrict().getName() != null ? searchParams.getDistrict().getName() : null
+            )
+                    .map(roomMapper::toDto);
             PagingRoomResponse response = new PagingRoomResponse();
             response.setPage(page);
             return response;
-        }
-        catch (Exception e){
+        } catch (Exception e) {
             throw e;
         }
+    }
+
+    public Page<RoomDTO> searchRoomAny(Integer type, Integer province, Integer district, Integer acreage, Integer price, Integer page, Integer size) {
+        Instant today = Instant.now();
+        Instant seventDayBefore = today.minus(Duration.ofDays(7));
+        Optional<AcreageRange> acreageRange = acreage == null ? Optional.empty() : acreageRageRepository.findById(acreage);
+        Optional<PriceRange> priceRange = price == null ? Optional.empty() : priceRangeRepository.findById(price);
+        Integer acreageMin = acreageRange.map(AcreageRange::getMin).orElse(null);
+        Integer acreageMax = acreageRange.map(AcreageRange::getMax).orElse(null);
+        Integer priceMin = priceRange.map(PriceRange::getMin).orElse(null);
+        Integer priceMax = priceRange.map(PriceRange::getMax).orElse(null);
+        Pageable pageable = PageRequest.of(page, size);
+        Page<RoomDTO> pageRoom = roomRepository.searchRoomAny(pageable, acreageMin, acreageMax, priceMin, priceMax, district, province, type, seventDayBefore)
+                .map(roomMapper::toDto);
+        pageRoom.forEach(x -> {
+            x.setIsUptop(x.getLastUpTop() != null && x.getLastUpTop().isAfter(seventDayBefore));
+            List<String> listSrc = pictureRepository.findSrcByRoomId(x.getId());
+            if (!listSrc.isEmpty()) {
+                x.setImage(ImageBase64.encoder(listSrc.get(0)));
+            }
+        });
+        return pageRoom;
+    }
+
+    public RoomDTO findDetailRoom(String id) {
+        Optional<Room> room = roomRepository.findByIdRoom(id);
+        if (!room.isPresent()) {
+            return null;
+        }
+        Room domain = room.get();
+        RoomDTO dto = roomMapper.toDto(domain);
+        Account account = domain.getAccount();
+        AccountDetail accountDetail = accountDetailRepository.findById(account.getId());
+        if (accountDetail == null) {
+            return null;
+        }
+        dto.setPhone(accountDetail.getPhone());
+        List<String> listSrc = pictureRepository.findSrcByRoomId(domain.getId());
+        if (!listSrc.isEmpty()) {
+            List<String> images = listSrc.stream().map(x -> ImageBase64.encoder(x)).collect(Collectors.toList());
+            dto.setPictures(images);
+        }
+        Ward ward = domain.getWard();
+        Province province = ward.getProvince();
+        District district = ward.getDistrict();
+        WardDto wardDto = WardDto.builder().build();
+        ProvinceDto provinceDto = ProvinceDto.builder().build();
+        DistrictDto districtDto = DistrictDto.builder().build();
+        dto.setWard(wardDto.toDto(ward));
+        dto.setDistrict(districtDto.toDto(district));
+        dto.setProvince(provinceDto.toDto(province));
+        dto.setCreatedBy(accountDetail.getName() + " - " + account.getUsername());
+        dto.setCreatedDate(domain.getCreatedDate().toString());
+        dto.setUpdatedDate(domain.getLastModifiedDate().toString());
+        return dto;
     }
 }

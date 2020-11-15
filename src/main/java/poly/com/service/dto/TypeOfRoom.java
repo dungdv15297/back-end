@@ -11,6 +11,4 @@ public enum TypeOfRoom {
     }
 
     private Integer value;
-
-
 }
