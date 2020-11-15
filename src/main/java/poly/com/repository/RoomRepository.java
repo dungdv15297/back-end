@@ -34,7 +34,6 @@ public interface RoomRepository extends JpaRepository<Room,Integer> {
             "and(r.acreageMax <=:acreageMax or :acreageMax is null) " +
             "and(r.priceMin >=:priceMin or :priceMin is null)  " +
             "and(r.priceMax <=:priceMax or :priceMax is null) " +
-            "and(lower(w.name ) like concat('%',:name,'%') or :name is null ) " +
             "and(lower(dt.name) like concat('%',:districtName,'%') or :districtName is null ) " +
             "group by r.createdDate order by r.createdDate asc ")
     Page<Room> finByRoomWithParam(Pageable pageable,
@@ -42,7 +41,6 @@ public interface RoomRepository extends JpaRepository<Room,Integer> {
                                   @Param("acreageMax") Integer acreageMax,
                                   @Param("priceMin") Integer priceMin,
                                   @Param("priceMax") Integer priceMax,
-                                  @Param("name") String name,
                                   @Param("districtName") String districtName
                                   );
 

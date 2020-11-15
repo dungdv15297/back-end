@@ -5,7 +5,6 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import poly.com.service.dto.AccountDTO;
 import poly.com.service.dto.DistrictDto;
-import poly.com.service.dto.StreetDTO;
 
 import java.util.List;
 
@@ -38,8 +37,6 @@ public class FilterRoomRequest {
     private Integer streetId;
 
     private AccountDTO account;
-
-    private StreetDTO street;
 
     private Integer upTopStatus;
 

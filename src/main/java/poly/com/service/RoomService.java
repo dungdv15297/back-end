@@ -30,7 +30,6 @@ import poly.com.service.dto.*;
 import poly.com.service.mapper.AcreageRageMapper;
 import poly.com.service.mapper.PriceRageMapper;
 import poly.com.service.mapper.RoomMapper;
-import poly.com.service.mapper.StreetMapper;
 
 import javax.swing.text.html.Option;
 import java.time.Duration;
@@ -241,7 +240,6 @@ public class RoomService {
                     searchParams.getAcreageMax() != null ? searchParams.getAcreageMax() : null,
                     searchParams.getPriceMin() != null ? searchParams.getPriceMin() : null,
                     searchParams.getPriceMax() != null ? searchParams.getPriceMax() : null,
-                    searchParams.getStreet().getName() != null ? searchParams.getStreet().getName() : null,
                     searchParams.getDistrict().getName() != null ? searchParams.getDistrict().getName() : null
             )
                     .map(roomMapper::toDto);
