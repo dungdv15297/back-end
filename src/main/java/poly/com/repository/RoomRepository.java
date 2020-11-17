@@ -44,10 +44,10 @@ public interface RoomRepository extends JpaRepository<Room,Integer> {
                                   @Param("districtName") String districtName
                                   );
 
-    @Query(value = "select * from ROOM r " +
-            "left join WARD w on r.WARD_ID = w.ID " +
-            "left join DISTRICT dt on dt.DISTRICT_ID = w.DISTRICT_ID " +
-            "left join PROVINCE pr on pr.PROVINCE_ID = w.PROVINCE_ID " +
+    @Query(value = "select * from room r " +
+            "left join ward w on r.WARD_ID = w.ID " +
+            "left join district dt on dt.DISTRICT_ID = w.DISTRICT_ID " +
+            "left join province pr on pr.PROVINCE_ID = w.PROVINCE_ID " +
             "where 1 " +
             "and (r.ACREAGE_MIN >=:acreageMin or :acreageMin is null) " +
             "and (r.ACREAGE_MAX <=:acreageMax or :acreageMax is null) " +
