@@ -48,6 +48,9 @@ public class AccountDetail extends AbstractAuditingEntity implements Serializabl
     @Column(name = "STATUS")
     private Integer status;
 
+    @Column(name = "AVATAR")
+    private String avatar;
+
     public AccountDetailDto toDto() {
         return AccountDetailDto.builder()
                 .id(id)

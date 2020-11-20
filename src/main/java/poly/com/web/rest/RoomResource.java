@@ -68,7 +68,7 @@ public class RoomResource {
             @RequestBody BaseDataRequest<DeleteRoomRequest> request
     ) {
         try {
-            DeleteRoomResponse response = roomService.deleteRoom(request.getBody());
+            DeleteRoomResponse response = roomService.delete(request.getBody());
             return ResponseUtil.wrap(response);
         } catch (ServiceException e) {
             return ResponseUtil.generateErrorResponse(e);
@@ -76,6 +76,11 @@ public class RoomResource {
         } catch (Exception e) {
             return ResponseUtil.generateErrorResponse(e);
         }
+    }
+
+    @PostMapping("delete")
+    public void deleteRoom(@RequestBody String id) {
+        roomService.deleteRoom(id);
     }
 
     @GetMapping("getPageRoom")

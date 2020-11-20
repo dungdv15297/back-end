@@ -194,7 +194,7 @@ public class RoomService {
         }
     }
 
-    public DeleteRoomResponse deleteRoom(DeleteRoomRequest request) throws ServiceException, Exception {
+    public DeleteRoomResponse delete(DeleteRoomRequest request) throws ServiceException, Exception {
         try {
             Optional<Room> optionalRoom = roomRepository.findByIdRoom(request.getId());
             if (!optionalRoom.isPresent()) {
@@ -210,6 +210,14 @@ public class RoomService {
         } catch (Exception e) {
             throw e;
         }
+    }
+
+    public void deleteRoom(String id) {
+        Optional<Room> roomOpt = roomRepository.findByIdRoom(id);
+        if (!roomOpt.isPresent()) {
+            return;
+        }
+        roomRepository.delete(roomOpt.get());
     }
 
     public Page<Room> getPageRoom(String accountId, int page, int size) {

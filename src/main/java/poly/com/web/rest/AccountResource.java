@@ -56,6 +56,16 @@ public class AccountResource {
         this.jwtUtil = jwtUtil;
     }
 
+    @PostMapping("/avatar")
+    public String getAvatar(@RequestBody String accountId) {
+        return accountService.getAvatar(accountId);
+    }
+
+    @PostMapping("/update-avatar")
+    public void updateAvatar(@RequestBody String avatarBase64, @RequestParam String id) {
+        accountService.updateAvatar(avatarBase64, id);
+    }
+
     @PostMapping("/add-account")
     public ResponseEntity<BaseDataResponse<CreateAccountResponse>> create(
             @RequestBody BaseDataRequest<CreateAccountRequest> request
