@@ -18,7 +18,7 @@ import java.util.*;
 public class VNPayResource {
 
     @PostMapping("/checkout")
-    public String checkout(HttpServletRequest req ,  @RequestBody  PaymentRequest param) throws UnsupportedEncodingException {
+    public String checkout(HttpServletRequest req , @RequestBody PaymentRequest param) throws UnsupportedEncodingException {
         Integer totalAmount = Integer.parseInt(param.getAmount())*100;
         String bank = param.getBank();
         Map<String, String> vnp_Params = new HashMap<>();
@@ -27,7 +27,7 @@ public class VNPayResource {
         vnp_Params.put("vnp_TmnCode", VNPayConfig.vnp_TmnCode);
         vnp_Params.put("vnp_Amount", totalAmount.toString());
         vnp_Params.put("vnp_CurrCode", "VND");
-        vnp_Params.put("vnp_BankCode", "NCB");
+        vnp_Params.put("vnp_BankCode", bank);
         vnp_Params.put("vnp_TxnRef", VNPayConfig.getRandomNumber(8));
         vnp_Params.put("vnp_OrderInfo", "1111");
         vnp_Params.put("vnp_OrderType", "billpayment");
