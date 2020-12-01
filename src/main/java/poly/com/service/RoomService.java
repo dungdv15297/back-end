@@ -65,6 +65,9 @@ public class RoomService {
     @Autowired
     private AccountDetailRepository accountDetailRepository;
 
+    @Autowired
+    private UploadFileRoomService uploadFileRoomService;
+
     public RoomService(RoomMapper roomMapper) {
         this.roomMapper = roomMapper;
     }
@@ -193,6 +196,7 @@ public class RoomService {
             UpdateRoomResponse response = new UpdateRoomResponse();
             response.setRoom(roomMapper.toDto(room));
             roomRepository.save(room);
+            uploadFileRoomService.removeImage(room.getId());
             return response;
         } catch (ServiceException e) {
             throw e;
@@ -348,6 +352,9 @@ public class RoomService {
         }
 
         Instant lastUptop = room.get().getLastUpTop();
+        if (lastUptop == null) {
+            return Uptop.builder().accept(true).build();
+        }
         Instant time = lastUptop.plus(Duration.ofHours(4));
         return Uptop.builder()
                 .accept(time.isBefore(Instant.now()))

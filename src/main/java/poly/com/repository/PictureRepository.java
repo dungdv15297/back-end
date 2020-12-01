@@ -13,4 +13,7 @@ public interface PictureRepository extends JpaRepository<Picture, Integer> {
 
     @Query("select p.src from Picture p where p.room.id = :roomId")
     List<String> findSrcByRoomId(@Param("roomId") String roomId);
+
+    @Query("from Picture p where p.room.id = :roomId")
+    List<Picture> findByRoomId(@Param("roomId") String roomId);
 }
