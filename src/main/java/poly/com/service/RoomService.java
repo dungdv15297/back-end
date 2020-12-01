@@ -16,8 +16,6 @@ import poly.com.client.dto.account.room.*;
 import poly.com.client.dto.room.FilterRoomRequest;
 import poly.com.client.dto.room.PagingRoomRequest;
 import poly.com.client.dto.room.PagingRoomResponse;
-import poly.com.client.dto.room.GetListRoomRequest;
-import poly.com.client.dto.room.GetListRoomResponse;
 import poly.com.config.Status;
 import poly.com.config.common.ValidationErrorResponse;
 import poly.com.config.common.exception.ServiceException;
@@ -27,11 +25,9 @@ import poly.com.config.common.validationError.ValidationError;
 import poly.com.domain.*;
 import poly.com.repository.*;
 import poly.com.service.dto.*;
-import poly.com.service.mapper.AcreageRageMapper;
-import poly.com.service.mapper.PriceRageMapper;
 import poly.com.service.mapper.RoomMapper;
+import poly.com.web.rest.RoomResource;
 
-import javax.swing.text.html.Option;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.List;
@@ -124,6 +120,16 @@ public class RoomService {
             room.setCreatedBy(SecurityContextHolder.getContext().getAuthentication().getName());
             room.setLastModifiedBy(SecurityContextHolder.getContext().getAuthentication().getName());
 
+            if (dto.getUpTopStatus() == 1) {
+                room.setUpTopStatus(1);
+                room.setLastUpTop(Instant.now());
+                AccountDetail accountDetail = accountDetailRepository.findById(account.get().getId());
+                Integer balance = accountDetail.getBalance();
+                balance -= 10000;
+                accountDetail.setBalance(balance);
+                accountDetailRepository.save(accountDetail);
+            }
+
             Room domain = roomRepository.save(room);
             RoomDTO roomDto = new RoomDTO();
             roomDto.setId(domain.getId());
@@ -167,6 +173,8 @@ public class RoomService {
             }
             RoomDTO dto = request.getRoom();
             Room room = roomMapper.toEntity(dto);
+            room.setLastUpTop(optionalRoom.get().getLastUpTop());
+            room.setUpTopStatus(optionalRoom.get().getUpTopStatus());
             room.setId(request.getRoom().getId());
             room.setWard(ward.get());
             room.setAccount(account.get());
@@ -181,7 +189,6 @@ public class RoomService {
             room.setStatus(Status.Active);
             room.setLastModifiedBy(SecurityContextHolder.getContext().getAuthentication().getName());
             room.setLastModifiedDate(Instant.now());
-
 
             UpdateRoomResponse response = new UpdateRoomResponse();
             response.setRoom(roomMapper.toDto(room));
@@ -312,5 +319,39 @@ public class RoomService {
         dto.setCreatedDate(domain.getCreatedDate().toString());
         dto.setUpdatedDate(domain.getLastModifiedDate().toString());
         return dto;
+    }
+
+    public Boolean uptop(RoomDTO dto) {
+        Optional<Room> room = roomRepository.findByIdRoom(dto.getId());
+        if (!room.isPresent()) {
+            return false;
+        }
+
+        AccountDetail accountDetail = accountDetailRepository.findById(room.get().getAccount().getId());
+        Integer balance = accountDetail.getBalance();
+        balance -= 10000;
+        accountDetail.setBalance(balance);
+        accountDetailRepository.save(accountDetail);
+
+        Room domain = room.get();
+        Integer uptopNo = domain.getUpTopStatus();
+        domain.setUpTopStatus(uptopNo++);
+        domain.setLastUpTop(Instant.now());
+        roomRepository.save(domain);
+        return true;
+    }
+
+    public Uptop canBeUptop(RoomDTO dto) {
+        Optional<Room> room = roomRepository.findByIdRoom(dto.getId());
+        if (!room.isPresent()) {
+            return Uptop.builder().accept(false).build();
+        }
+
+        Instant lastUptop = room.get().getLastUpTop();
+        Instant time = lastUptop.plus(Duration.ofHours(4));
+        return Uptop.builder()
+                .accept(time.isBefore(Instant.now()))
+                .time(time.toString())
+                .build();
     }
 }

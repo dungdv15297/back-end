@@ -50,7 +50,15 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter implements Appl
     protected void configure(HttpSecurity http) throws Exception{
         http.csrf().disable()
             .authorizeRequests()
-                .antMatchers("/api/account/authenticate", "/api/account/register").permitAll()
+                .antMatchers("/api/account/authenticate"
+                        , "/api/account/register"
+                        , "/api/room/search-room-any"
+                        , "/api/province/getAll"
+                        , "/api/master/acreage-range/getAll"
+                        , "/api/master/price-range/getAll"
+                        , "/api/district/getByProvinceId"
+                        , "/api/room/details-room")
+                .permitAll()
                 .anyRequest().authenticated()
             .and()
                 .exceptionHandling()

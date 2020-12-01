@@ -1,5 +1,6 @@
 package poly.com.web.rest;
 
+import lombok.Builder;
 import lombok.Data;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,6 +19,7 @@ import poly.com.config.common.util.ResponseUtil;
 import poly.com.domain.Room;
 import poly.com.service.RoomService;
 import poly.com.service.dto.RoomDTO;
+import poly.com.service.dto.Uptop;
 
 import java.util.List;
 
@@ -114,6 +116,16 @@ public class RoomResource {
     @PostMapping("details-room")
     public RoomDTO detailsRoom(@RequestBody String id) {
         return roomService.findDetailRoom(id);
+    }
+
+    @PostMapping("uptop")
+    public Boolean uptop(@RequestBody RoomDTO roomDto) {
+        return roomService.uptop(roomDto);
+    }
+
+    @PostMapping("canbeUptop")
+    public Uptop canBeUptop(@RequestBody RoomDTO roomDto) {
+        return roomService.canBeUptop(roomDto);
     }
 }
 

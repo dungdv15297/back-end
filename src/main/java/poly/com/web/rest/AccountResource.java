@@ -234,4 +234,23 @@ public class AccountResource {
         }
         return ResponseEntity.badRequest().body(false);
     }
+
+    @PostMapping("/check-payment")
+    public Boolean checkPayment() {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        String username = auth.getName();
+        Account account = accountRepository.findByUserName(username);
+        if (account == null) {
+            return false;
+        }
+        AccountDetail accountDetail = accountDetailRepository.findById(account.getId());
+        if (accountDetail == null) {
+            return false;
+        }
+        Integer balance = accountDetail.getBalance();
+        if (balance >= 10000) {
+            return true;
+        }
+        return false;
+    }
 }
