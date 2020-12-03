@@ -111,6 +111,14 @@ public class UploadFileRoomService {
         return listSrc.stream().map(x -> ImageBase64.encoder(x)).collect(Collectors.toList());
     }
 
+    public void removeImage(String roomId) {
+        List<Picture> listPic = pictureRepository.findByRoomId(roomId);
+        if (listPic.isEmpty()) {
+            return;
+        }
+        pictureRepository.deleteAll(listPic);
+    }
+
 }
 
 class ImageBase64 {
