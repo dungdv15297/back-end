@@ -18,27 +18,27 @@ public class SearchCondition implements Serializable {
     @Id
     @GeneratedValue(strategy=GenerationType.AUTO)
     @Column(name = "ID")
-    private int id;
+    private Integer id;
 
     @Column(name = "TYPE_OF_ROOM")
-    private int typeOfRoom;
+    private Integer typeOfRoom;
 
     @Column(name = "PROVINCE_ID")
-    private int provinceId;
+    private Integer provinceId;
 
     @Column(name = "DISTRICT_ID")
-    private int districtId;
+    private Integer districtId;
 
     @Column(name = "PPRICE_MIN")
-    private int priceMin;
+    private Integer priceMin;
 
     @Column(name = "PRICE_MAX")
-    private int priceMax;
+    private Integer priceMax;
 
     @Column(name = "ACREAGE_MIN")
-    private int acreageMin;
+    private Integer acreageMin;
     @Column(name = "ACREAGE_MAX")
-    private int acreageMax;
+    private Integer acreageMax;
 
     @Column(name = "ACCOUNT_ID")
     private String accountId;

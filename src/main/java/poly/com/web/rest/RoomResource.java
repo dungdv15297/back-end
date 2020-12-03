@@ -110,6 +110,18 @@ public class RoomResource {
                 request.getAcreage(),
                 request.getPrice(),
                 request.getPage(),
+                request.getSize(),
+                request.getAccountId());
+    }
+
+    @PostMapping("search-trend-room")
+    public Page<RoomDTO> searchTrendRoom(@RequestBody SearchRoomAnyRequest request) {
+        return roomService.searchTrendRoom(request.getType(),
+                request.getProvince(),
+                request.getDistrict(),
+                request.getAcreage(),
+                request.getPrice(),
+                request.getPage(),
                 request.getSize());
     }
 

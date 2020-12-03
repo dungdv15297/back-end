@@ -57,7 +57,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter implements Appl
                         , "/api/master/acreage-range/getAll"
                         , "/api/master/price-range/getAll"
                         , "/api/district/getByProvinceId"
-                        , "/api/room/details-room")
+                        , "/api/room/details-room"
+                        , "/api/room/search-trend-room")
                 .permitAll()
                 .anyRequest().authenticated()
             .and()

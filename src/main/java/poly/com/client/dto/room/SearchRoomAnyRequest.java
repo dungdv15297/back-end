@@ -12,4 +12,5 @@ public class SearchRoomAnyRequest {
     private Integer price;
     private Integer page;
     private Integer size;
+    private String accountId;
 }

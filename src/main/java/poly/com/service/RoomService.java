@@ -276,7 +276,7 @@ public class RoomService {
         }
     }
 
-    public Page<RoomDTO> searchRoomAny(Integer type, Integer province, Integer district, Integer acreage, Integer price, Integer page, Integer size) {
+    public Page<RoomDTO> searchRoomAny(Integer type, Integer province, Integer district, Integer acreage, Integer price, Integer page, Integer size, String accountId) {
         Instant today = Instant.now();
         Instant seventDayBefore = today.minus(Duration.ofDays(7));
         Optional<AcreageRange> acreageRange = acreage == null ? Optional.empty() : acreageRageRepository.findById(acreage);
@@ -285,15 +285,42 @@ public class RoomService {
         Integer acreageMax = acreageRange.map(AcreageRange::getMax).orElse(null);
         Integer priceMin = priceRange.map(PriceRange::getMin).orElse(null);
         Integer priceMax = priceRange.map(PriceRange::getMax).orElse(null);
-        SearchCondition searchCondition = SearchCondition.builder()
-                .provinceId(province)
-                .districtId(district)
-                .priceMin(priceMin)
-                .priceMax(priceMax)
-                .acreageMin(acreageMin)
-                .acreageMax(acreageMax)
-                .build();
-        searchConditionRepository.save(searchCondition);
+        if (accountId != null) {
+            SearchCondition searchCondition = SearchCondition.builder()
+                    .typeOfRoom(type)
+                    .provinceId(province)
+                    .districtId(district)
+                    .priceMin(priceMin)
+                    .priceMax(priceMax)
+                    .acreageMin(acreageMin)
+                    .acreageMax(acreageMax)
+                    .accountId(accountId)
+                    .build();
+            searchConditionRepository.save(searchCondition);
+        }
+        Pageable pageable = PageRequest.of(page, size);
+        Page<RoomDTO> pageRoom = roomRepository.searchRoomAny(pageable, acreageMin, acreageMax, priceMin, priceMax, district, province, type, seventDayBefore)
+                .map(roomMapper::toDto);
+        pageRoom.forEach(x -> {
+            x.setIsUptop(x.getLastUpTop() != null && x.getLastUpTop().isAfter(seventDayBefore));
+            List<String> listSrc = pictureRepository.findSrcByRoomId(x.getId());
+            if (!listSrc.isEmpty()) {
+                x.setImage(ImageBase64.encoder(listSrc.get(0)));
+            }
+        });
+        return pageRoom;
+    }
+
+    public Page<RoomDTO> searchTrendRoom(Integer type, Integer province, Integer district, Integer acreage, Integer price, Integer page, Integer size) {
+        Instant today = Instant.now();
+        Instant seventDayBefore = today.minus(Duration.ofDays(7));
+        Optional<AcreageRange> acreageRange = acreage == null ? Optional.empty() : acreageRageRepository.findById(acreage);
+        Optional<PriceRange> priceRange = price == null ? Optional.empty() : priceRangeRepository.findById(price);
+        Integer acreageMin = acreageRange.map(AcreageRange::getMin).orElse(null);
+        Integer acreageMax = acreageRange.map(AcreageRange::getMax).orElse(null);
+        Integer priceMin = priceRange.map(PriceRange::getMin).orElse(null);
+        Integer priceMax = priceRange.map(PriceRange::getMax).orElse(null);
+
         Pageable pageable = PageRequest.of(page, size);
         Page<RoomDTO> pageRoom = roomRepository.searchRoomAny(pageable, acreageMin, acreageMax, priceMin, priceMax, district, province, type, seventDayBefore)
                 .map(roomMapper::toDto);
@@ -391,6 +418,15 @@ public class RoomService {
         Pageable pageable = PageRequest.of(0, 6);
         Page<RoomDTO> pageRoom = roomRepository.searchRoomAny(pageable, acreageMin, acreageMax, priceMin, priceMax, district, province, type, seventDayBefore)
                 .map(roomMapper::toDto);
+        if (pageRoom.isEmpty()) {
+            pageRoom = roomRepository.searchRoomAny(pageable, null, null, null, null, district, province, null, seventDayBefore)
+                .map(roomMapper::toDto);
+        }
+
+        if (pageRoom.isEmpty()) {
+            pageRoom = roomRepository.searchRoomAny(pageable, null, null, null, null, null, province, null, seventDayBefore)
+                    .map(roomMapper::toDto);
+        }
         pageRoom.forEach(x -> {
             x.setIsUptop(x.getLastUpTop() != null && x.getLastUpTop().isAfter(seventDayBefore));
             List<String> listSrc = pictureRepository.findSrcByRoomId(x.getId());
