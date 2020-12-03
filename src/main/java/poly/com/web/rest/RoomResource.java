@@ -127,6 +127,11 @@ public class RoomResource {
     public Uptop canBeUptop(@RequestBody RoomDTO roomDto) {
         return roomService.canBeUptop(roomDto);
     }
+
+    @PostMapping("suggestion")
+    public Page<RoomDTO> suggestion(@RequestBody String accountId) {
+        return roomService.suggestionsRoom(accountId);
+    }
 }
 
 

@@ -55,7 +55,19 @@ public interface RoomRepository extends JpaRepository<Room,Integer> {
             "and (dt.DISTRICT_ID = :districtId or :districtId is null) " +
             "and (pr.PROVINCE_ID = :provinceId or :provinceId is null) " +
             "and (r.TYPE_OF = :typeOfRoom or :typeOfRoom is null) " +
-            "order by (r.LAST_UP_TOP > :upTopTime) desc, r.UP_TOP_STATUS desc, r.CREATED_DATE desc",
+            "order by " +
+            "CASE " +
+            "WHEN (r.LAST_UP_TOP > :upTopTime) THEN r.LAST_UP_TOP " +
+            "END desc, " +
+            "CASE " +
+            "WHEN (r.LAST_UP_TOP > :upTopTime) THEN r.UP_TOP_STATUS " +
+            "END desc, " +
+            "CASE " +
+            "WHEN (r.LAST_UP_TOP > :upTopTime) THEN r.CREATED_DATE " +
+            "END asc, " +
+            "CASE " +
+            "WHEN (r.LAST_UP_TOP <= :upTopTime) THEN r.CREATED_DATE " +
+            "END desc",
             nativeQuery = true)
     Page<Room> searchRoomAny(Pageable pageable,
                              @Param("acreageMin") Integer acreageMin,

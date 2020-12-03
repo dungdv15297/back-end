@@ -68,6 +68,12 @@ public class RoomService {
     @Autowired
     private UploadFileRoomService uploadFileRoomService;
 
+    @Autowired
+    private SearchConditionRepository searchConditionRepository;
+
+    @Autowired
+    private SearchConditionService searchConditionService;
+
     public RoomService(RoomMapper roomMapper) {
         this.roomMapper = roomMapper;
     }
@@ -279,6 +285,15 @@ public class RoomService {
         Integer acreageMax = acreageRange.map(AcreageRange::getMax).orElse(null);
         Integer priceMin = priceRange.map(PriceRange::getMin).orElse(null);
         Integer priceMax = priceRange.map(PriceRange::getMax).orElse(null);
+        SearchCondition searchCondition = SearchCondition.builder()
+                .provinceId(province)
+                .districtId(district)
+                .priceMin(priceMin)
+                .priceMax(priceMax)
+                .acreageMin(acreageMin)
+                .acreageMax(acreageMax)
+                .build();
+        searchConditionRepository.save(searchCondition);
         Pageable pageable = PageRequest.of(page, size);
         Page<RoomDTO> pageRoom = roomRepository.searchRoomAny(pageable, acreageMin, acreageMax, priceMin, priceMax, district, province, type, seventDayBefore)
                 .map(roomMapper::toDto);
@@ -360,5 +375,29 @@ public class RoomService {
                 .accept(time.isBefore(Instant.now()))
                 .time(time.toString())
                 .build();
+    }
+
+    public Page<RoomDTO> suggestionsRoom(String accountId) {
+        SearchConditionDto searchConditionDto = searchConditionService.getTopSearch(accountId);
+        Integer acreageMin = searchConditionDto.getAcreageMin();
+        Integer acreageMax = searchConditionDto.getAcreageMax();
+        Integer priceMin = searchConditionDto.getPriceMin();
+        Integer priceMax = searchConditionDto.getPriceMax();
+        Integer district = searchConditionDto.getDistrictId();
+        Integer province = searchConditionDto.getProvinceId();
+        Integer type = searchConditionDto.getTypeOfRoom();
+        Instant today = Instant.now();
+        Instant seventDayBefore = today.minus(Duration.ofDays(7));
+        Pageable pageable = PageRequest.of(0, 6);
+        Page<RoomDTO> pageRoom = roomRepository.searchRoomAny(pageable, acreageMin, acreageMax, priceMin, priceMax, district, province, type, seventDayBefore)
+                .map(roomMapper::toDto);
+        pageRoom.forEach(x -> {
+            x.setIsUptop(x.getLastUpTop() != null && x.getLastUpTop().isAfter(seventDayBefore));
+            List<String> listSrc = pictureRepository.findSrcByRoomId(x.getId());
+            if (!listSrc.isEmpty()) {
+                x.setImage(ImageBase64.encoder(listSrc.get(0)));
+            }
+        });
+        return pageRoom;
     }
 }
