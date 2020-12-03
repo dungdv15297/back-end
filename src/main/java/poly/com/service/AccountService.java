@@ -26,7 +26,10 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.io.File;
 import java.time.Instant;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional(rollbackFor = {
@@ -63,6 +66,27 @@ public class AccountService implements UserDetailsService {
             return base64;
         }
         return ImageBase64.encoder(path);
+    }
+
+    public List<UserDTO> getUserbyRole(Integer role) {
+        if(role != null) {
+            List<Account> lstAccount = accountRepository.findOptByRole(role);
+            List<String> id = lstAccount.stream().map(x -> x.getId()).collect(Collectors.toList());
+            List<AccountDetail> lstAccountDetail = accountDetailRepository.findByListId((id));
+            List<UserDTO> result = lstAccountDetail.stream().map(item ->
+                    UserDTO.builder()
+                            .address(item.getAddress())
+                            .balance(item.getBalance())
+                            .birthday(item.getBirthday())
+                            .createdBy(item.getCreatedBy())
+                            .createdDate(item.getCreatedDate())
+                            .email(item.getEmail())
+                            .gender(item.getGender())
+                            .build()
+                ).collect(Collectors.toList());
+            return result;
+        }
+       return new ArrayList<>();
     }
 
     public void updateAvatar(String avatarBase64, String accoundId) {
@@ -102,7 +126,6 @@ public class AccountService implements UserDetailsService {
 
             AccountDTO dto = request.getAccount();
             Account account = accountMapper.toEntity(dto);
-
             account.setUsername(request.getAccount().getUsername());
             account.setPassword(request.getAccount().getPassword());
             account.setStatus(request.getAccount().getStatus());

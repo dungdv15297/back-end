@@ -193,7 +193,11 @@ public class AccountResource {
             account.setId(id);
             account.setUsername(username);
             account.setPassword(MD5Library.md5(password));
-            account.setRole(Role.User);
+            if(request.getRole() != null){
+                account.setRole(Role.Admin);
+            } else {
+                account.setRole(Role.User);
+            }
             account.setCreatedDate(Instant.now());
             account.setCreatedBy(username);
             account.setLastModifiedBy(username);

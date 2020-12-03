@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
 
 @Repository
@@ -27,4 +28,7 @@ public interface AccountRepository extends JpaRepository<Account,Integer> {
 
     @Query(" from Account ac where 1=1 and ac.id = :id")
     Optional<Account> findOptById(@Param("id") String id);
+
+    @Query(" from Account ac where 1=1 and ac.role = :role")
+    List<Account> findOptByRole(@Param("id") Integer role);
 }
