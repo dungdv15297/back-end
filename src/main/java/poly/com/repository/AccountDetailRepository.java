@@ -15,7 +15,7 @@ public interface AccountDetailRepository extends JpaRepository<AccountDetail,Int
     AccountDetail findById(@Param("id") String id);
 
     @Query(" FROM AccountDetail a WHERE a.id in :listId")
-    List<AccountDetail> findByListId(@Param("id") List<String> listId);
+    List<AccountDetail> findByListId(@Param("listId") List<String> listId);
 
     @Query("select avatar from AccountDetail where id=:id")
     String getAvatar(@Param("id") String id);

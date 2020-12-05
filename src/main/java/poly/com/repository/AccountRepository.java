@@ -30,5 +30,5 @@ public interface AccountRepository extends JpaRepository<Account,Integer> {
     Optional<Account> findOptById(@Param("id") String id);
 
     @Query(" from Account ac where 1=1 and ac.role = :role")
-    List<Account> findOptByRole(@Param("id") Integer role);
+    List<Account> findOptByRole(@Param("role") Integer role);
 }

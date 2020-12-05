@@ -144,6 +144,11 @@ public class RoomResource {
     public Page<RoomDTO> suggestion(@RequestBody String accountId) {
         return roomService.suggestionsRoom(accountId);
     }
+
+    @PostMapping("sameAs")
+    public Page<RoomDTO> sameAs(@RequestBody String roomid) {
+        return roomService.sameAs(roomid);
+    }
 }
 
 

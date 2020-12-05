@@ -3,10 +3,8 @@ package poly.com.service;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.*;
+import org.springframework.data.util.Streamable;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -26,7 +24,6 @@ import poly.com.domain.*;
 import poly.com.repository.*;
 import poly.com.service.dto.*;
 import poly.com.service.mapper.RoomMapper;
-import poly.com.web.rest.RoomResource;
 
 import java.time.Duration;
 import java.time.Instant;
@@ -435,5 +432,39 @@ public class RoomService {
             }
         });
         return pageRoom;
+    }
+
+    public Page<RoomDTO> sameAs(String roomid) {
+        Optional<Room> roomOpt = roomRepository.findByIdRoom(roomid);
+        if (!roomOpt.isPresent()) {
+            return null;
+        }
+        Instant today = Instant.now();
+        Instant seventDayBefore = today.minus(Duration.ofDays(7));
+        Room room = roomOpt.get();
+        Integer priceMin = room.getPriceMin();
+        Integer priceMax = room.getPriceMax();
+        Integer acreageMin = room.getAcreageMin();
+        Integer acreageMax = room.getAcreageMax();
+        Ward ward = room.getWard();
+        Integer district = ward.getDistrict().getId();
+        Integer province = ward.getProvince().getId();
+        Integer type = room.getTypeOfRoom();
+        Pageable pageable = PageRequest.of(0, 10);
+        Page<RoomDTO> pageRoom = roomRepository.searchRoomAny(pageable, acreageMin, acreageMax, priceMin, priceMax, district, province, null, seventDayBefore)
+                .map(roomMapper::toDto);
+        if (pageRoom.isEmpty()) {
+            pageRoom = roomRepository.searchRoomAny(pageable, null, null, null, null, district, province, null, seventDayBefore)
+                    .map(roomMapper::toDto);
+        }
+        pageRoom.forEach(x -> {
+            x.setIsUptop(x.getLastUpTop() != null && x.getLastUpTop().isAfter(seventDayBefore));
+            List<String> listSrc = pictureRepository.findSrcByRoomId(x.getId());
+            if (!listSrc.isEmpty()) {
+                x.setImage(ImageBase64.encoder(listSrc.get(0)));
+            }
+        });
+        List<RoomDTO> result = pageRoom.stream().filter(x -> !x.getId().equalsIgnoreCase(roomid)).collect(Collectors.toList());
+        return new PageImpl<>(result);
     }
 }
