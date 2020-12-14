@@ -32,4 +32,16 @@ public class DistrictService {
                 .map(x -> DistrictDto.builder().build().toDto(x))
                 .collect(Collectors.toList());
     }
+
+    public List<Integer> getData(Integer provinceId) {
+        return districtRepository.getData(provinceId);
+    }
+
+    public List<Integer> getDataUptop(Integer provinceId, Integer year) {
+        return districtRepository.getDataUptop(provinceId, year);
+    }
+
+    public List<Integer> getDataUnUptop(Integer provinceId, Integer year) {
+        return districtRepository.getDataUnUptop(provinceId, year);
+    }
 }

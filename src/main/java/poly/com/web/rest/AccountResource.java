@@ -126,7 +126,9 @@ public class AccountResource {
         if (accountDetail == null) {
             return ResponseEntity.badRequest().body(AccountDetailDto.builder().errorCode("ERR007").build());
         }
-        return ResponseEntity.ok(accountDetail.toDto());
+        AccountDetailDto accountDetailDto = accountDetail.toDto();
+        accountDetailDto.setRole(account.getRole());
+        return ResponseEntity.ok(accountDetailDto);
     }
 
     @PostMapping("/getById")
@@ -139,7 +141,7 @@ public class AccountResource {
             Account account = accountRepository.findById(id);
             AccountDetailDto result = accountDetail.toDto();
             result.setUsername(account.getUsername());
-            result.setUpdatedAc(account.getLastModifiedDate().toString());
+            result.setUpdatedAc (account.getLastModifiedDate().toString());
             return ResponseEntity.ok(result);
         } catch (Exception e) {
             // Khong the tim thay thong tin tai khoan

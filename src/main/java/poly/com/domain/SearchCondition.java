@@ -29,7 +29,7 @@ public class SearchCondition implements Serializable {
     @Column(name = "DISTRICT_ID")
     private Integer districtId;
 
-    @Column(name = "PPRICE_MIN")
+    @Column(name = "PRICE_MIN")
     private Integer priceMin;
 
     @Column(name = "PRICE_MAX")

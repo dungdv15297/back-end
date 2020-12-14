@@ -27,9 +27,8 @@ import poly.com.service.mapper.RoomMapper;
 
 import java.time.Duration;
 import java.time.Instant;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.time.LocalTime;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -70,6 +69,12 @@ public class RoomService {
 
     @Autowired
     private SearchConditionService searchConditionService;
+
+    @Autowired
+    private ProvinceService provinceService;
+
+    @Autowired
+    private DistrictService districtService;
 
     public RoomService(RoomMapper roomMapper) {
         this.roomMapper = roomMapper;
@@ -282,7 +287,7 @@ public class RoomService {
         Integer acreageMax = acreageRange.map(AcreageRange::getMax).orElse(null);
         Integer priceMin = priceRange.map(PriceRange::getMin).orElse(null);
         Integer priceMax = priceRange.map(PriceRange::getMax).orElse(null);
-        if (accountId != null) {
+        if (accountId != null && !accountId.isEmpty()) {
             SearchCondition searchCondition = SearchCondition.builder()
                     .typeOfRoom(type)
                     .provinceId(province)
@@ -451,7 +456,7 @@ public class RoomService {
         Integer province = ward.getProvince().getId();
         Integer type = room.getTypeOfRoom();
         Pageable pageable = PageRequest.of(0, 10);
-        Page<RoomDTO> pageRoom = roomRepository.searchRoomAny(pageable, acreageMin, acreageMax, priceMin, priceMax, district, province, null, seventDayBefore)
+        Page<RoomDTO> pageRoom = roomRepository.searchRoomAny(pageable, acreageMin, acreageMax, priceMin, priceMax, district, province, type, seventDayBefore)
                 .map(roomMapper::toDto);
         if (pageRoom.isEmpty()) {
             pageRoom = roomRepository.searchRoomAny(pageable, null, null, null, null, district, province, null, seventDayBefore)
@@ -466,5 +471,66 @@ public class RoomService {
         });
         List<RoomDTO> result = pageRoom.stream().filter(x -> !x.getId().equalsIgnoreCase(roomid)).collect(Collectors.toList());
         return new PageImpl<>(result);
+    }
+
+    public List<String> top3() {
+        List<String> listId = roomRepository.top3(PageRequest.of(0, 3)).stream().map(x -> x.getId().toString()).collect(Collectors.toList());
+        return listId;
+    }
+
+    public DashboardInfor getDashboardInfor() {
+        Integer uptop = roomRepository.countUptop();
+        Integer notUptop = roomRepository.countNotUptop();
+        Integer monthUptop = roomRepository.countMonthUptop();
+        Integer monthNotUptop = roomRepository.countMonthNotUptop();
+        return DashboardInfor.builder()
+                .uptop(uptop)
+                .notUptop(notUptop)
+                .monthNotUptop(monthNotUptop)
+                .monthUptop(monthUptop)
+                .month(Calendar.getInstance().get(Calendar.MONTH))
+                .year(Calendar.getInstance().get(Calendar.YEAR))
+                .build();
+    }
+
+    public Page<ProvinceDto> getProvinceStastical(Integer page) {
+        PageRequest pageRequest = PageRequest.of(page, 10);
+        Page<Province> provinces = provinceService.getAll(pageRequest);
+        Page<ProvinceDto> provinceDtos = provinces.map(x -> {
+            Integer id = x.getId();
+            Integer uptop = roomRepository.countUptopByProvince(id);
+            Integer unUptop = roomRepository.countNotUptopByProvince(id);
+            return ProvinceDto.builder().id(x.getId())
+                    .code(x.getCode())
+                    .name(x.getName())
+                    .uptop(uptop)
+                    .unUptop(unUptop)
+                    .build();
+        });
+        return provinceDtos;
+    }
+
+    public List<Top3Province> top3Province() {
+        List<ProvinceDto> provinces = provinceService.top3Province();
+        List<Top3Province> top3Provinces = new ArrayList<>();
+        provinces.forEach(province -> {
+            List<DistrictDto> districts = districtService.getByProvince(province.getId());
+            List<String> labels = districts.stream().map(x -> x.getName()).collect(Collectors.toList());
+            List<Integer> data = districtService.getData(province.getId());
+            top3Provinces.add(Top3Province.builder().provinceId(province.getId()).provinceName(province.getName()).labels(labels).data(data).build());
+        });
+        return top3Provinces;
+    }
+
+    public ProvinceDetail provinceDetail(Integer provinceId, Integer year) {
+        List<DistrictDto> districtDtos = districtService.getByProvince(provinceId);
+        List<String> labels = districtDtos.stream().map(x -> x.getName()).collect(Collectors.toList());
+        List<Integer> uptop = districtService.getDataUptop(provinceId, year);
+        List<Integer> unuptop = districtService.getDataUnUptop(provinceId, year);
+        return ProvinceDetail.builder()
+                .labels(labels)
+                .uptop(uptop)
+                .unuptop(unuptop)
+                .build();
     }
 }

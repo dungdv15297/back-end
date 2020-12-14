@@ -16,6 +16,8 @@ public class ProvinceDto implements EntityMapper<ProvinceDto, Province>, Seriali
     private String name;
     private Integer status;
     private String code;
+    private Integer uptop;
+    private Integer unUptop;
 
     @Override
     public Province toEntity(ProvinceDto dto) {

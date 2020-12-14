@@ -1,16 +1,21 @@
 package poly.com.repository;
 
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
+import poly.com.domain.Province;
 import poly.com.domain.Room;
+import poly.com.service.dto.ProvinceRoomDto;
 
 import java.time.Instant;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @Repository
@@ -57,17 +62,13 @@ public interface RoomRepository extends JpaRepository<Room,Integer> {
             "and (r.TYPE_OF = :typeOfRoom or :typeOfRoom is null) " +
             "order by " +
             "CASE " +
-            "WHEN (r.LAST_UP_TOP > :upTopTime) THEN r.LAST_UP_TOP " +
+            "WHEN (r.LAST_UP_TOP > :upTopTime) THEN 1 ELSE 0 " +
             "END desc, " +
             "CASE " +
-            "WHEN (r.LAST_UP_TOP > :upTopTime) THEN r.UP_TOP_STATUS " +
+            "WHEN (r.LAST_UP_TOP > :upTopTime) THEN r.UP_TOP_STATUS ELSE 0 " +
             "END desc, " +
-            "CASE " +
-            "WHEN (r.LAST_UP_TOP > :upTopTime) THEN r.CREATED_DATE " +
-            "END asc, " +
-            "CASE " +
-            "WHEN (r.LAST_UP_TOP <= :upTopTime) THEN r.CREATED_DATE " +
-            "END desc",
+            "CASE WHEN (r.LAST_UP_TOP > DATE_SUB(NOW(), INTERVAL 7 DAY)) THEN r.LAST_UP_TOP END ASC, " +
+            "r.CREATED_DATE DESC",
             nativeQuery = true)
     Page<Room> searchRoomAny(Pageable pageable,
                              @Param("acreageMin") Integer acreageMin,
@@ -78,4 +79,50 @@ public interface RoomRepository extends JpaRepository<Room,Integer> {
                              @Param("provinceId") Integer provinceId,
                              @Param("typeOfRoom") Integer typeOfRoom,
                              @Param("upTopTime") Instant upTopTime);
+
+    @Query("select a.ward.province from Room a group by a.ward.province order by count(a) desc")
+    List<Province> top3(PageRequest pageRequest);
+
+    @Query("select a.ward.name, count(a) from Room a where a.ward.province.id = :provinceId group by a.ward")
+    LinkedHashMap<String, Integer> getCountRoom(@Param("provinceId") Integer provinceId);
+
+    @Query(value = "SELECT COUNT(*) FROM `room` WHERE LAST_UP_TOP > DATE_SUB(NOW(), INTERVAL 7 DAY) AND YEAR(CREATED_DATE) = YEAR(NOW())", nativeQuery = true)
+    Integer countUptop();
+
+    @Query(value = "SELECT COUNT(*) FROM `room` WHERE (LAST_UP_TOP <= DATE_SUB(NOW(), INTERVAL 7 DAY) OR LAST_UP_TOP IS NULL) AND YEAR(CREATED_DATE) = YEAR(NOW())", nativeQuery = true)
+    Integer countNotUptop();
+
+    @Query(value = "SELECT COUNT(*) FROM `room` WHERE LAST_UP_TOP > DATE_SUB(NOW(), INTERVAL 7 DAY) AND YEAR(CREATED_DATE) = YEAR(NOW()) AND MONTH(CREATED_DATE) = MONTH(NOW())", nativeQuery = true)
+    Integer countMonthUptop();
+
+    @Query(value = "SELECT COUNT(*) FROM `room` WHERE (LAST_UP_TOP <= DATE_SUB(NOW(), INTERVAL 7 DAY) OR LAST_UP_TOP IS NULL) AND YEAR(CREATED_DATE) = YEAR(NOW()) AND MONTH(CREATED_DATE) = MONTH(NOW())", nativeQuery = true)
+    Integer countMonthNotUptop();
+
+    @Query(value = "select count(*) from room left join ward on room.WARD_ID = ward.ID " +
+            "left join province on ward.PROVINCE_ID = province.PROVINCE_ID " +
+            "where province.PROVINCE_ID = :provinceId " +
+            "and room.LAST_UP_TOP > DATE_SUB(NOW(), INTERVAL 7 DAY)" +
+            "and YEAR(room.CREATED_DATE) = YEAR(NOW())", nativeQuery = true)
+    Integer countUptopByProvince(@Param("provinceId") Integer provinceId);
+
+    @Query(value = "select count(*) from room left join ward on room.WARD_ID = ward.ID " +
+            "left join province on ward.PROVINCE_ID = province.PROVINCE_ID " +
+            "where province.PROVINCE_ID = :provinceId " +
+            "and (room.LAST_UP_TOP <= DATE_SUB(NOW(), INTERVAL 7 DAY) OR room.LAST_UP_TOP IS NULL) " +
+            "and YEAR(room.CREATED_DATE) = YEAR(NOW())", nativeQuery = true)
+    Integer countNotUptopByProvince(@Param("provinceId") Integer provinceId);
+
+//    @Query(value = "select count(*) from room left join ward on room.WARD_ID = ward.ID" +
+//            " where ward.PROVINCE_ID = :provinceId" +
+//            " AND ward.ID = :wardId" +
+//            " AND room.LAST_UP_TOP > DATE_SUB(NOW(), INTERVAL 7 DAY)" +
+//            " AND YEAR(room.CREATED_DATE) = YEAR(NOW())", nativeQuery = true)
+//    Integer countUptopByWard(@Param("provinceId") Integer provinceId, @Param("wardID") Integer wardId);
+
+//    @Query(value = "select count(*) from room left join ward on room.WARD_ID = ward.ID" +
+//            " where ward.PROVINCE_ID = :provinceId" +
+//            " AND ward.ID = :wardId" +
+//            " AND room.LAST_UP_TOP > DATE_SUB(NOW(), INTERVAL 7 DAY)" +
+//            " AND YEAR(room.CREATED_DATE) = YEAR(NOW())", nativeQuery = true)
+//    Integer countNotUptopByWard(@Param("provinceId") Integer provinceId, @Param("wardID") Integer wardId);
 }

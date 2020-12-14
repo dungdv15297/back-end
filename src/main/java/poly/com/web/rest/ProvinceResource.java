@@ -22,4 +22,5 @@ public class ProvinceResource {
     public List<ProvinceDto> getAll() {
         return provinceService.getAll();
     }
+
 }

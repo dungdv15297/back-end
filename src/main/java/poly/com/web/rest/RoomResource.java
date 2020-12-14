@@ -18,8 +18,7 @@ import poly.com.config.common.exception.ServiceException;
 import poly.com.config.common.util.ResponseUtil;
 import poly.com.domain.Room;
 import poly.com.service.RoomService;
-import poly.com.service.dto.RoomDTO;
-import poly.com.service.dto.Uptop;
+import poly.com.service.dto.*;
 
 import java.util.List;
 
@@ -148,6 +147,29 @@ public class RoomResource {
     @PostMapping("sameAs")
     public Page<RoomDTO> sameAs(@RequestBody String roomid) {
         return roomService.sameAs(roomid);
+    }
+
+    @PostMapping("top3")
+    public List<String> top3() { return roomService.top3(); }
+
+    @GetMapping("dashboardInfor")
+    public DashboardInfor dashboardInfor() {
+        return roomService.getDashboardInfor();
+    }
+
+    @GetMapping("getProvinceStastical")
+    public Page<ProvinceDto> getProvinceStastical(@RequestParam("page") Integer page) {
+        return roomService.getProvinceStastical(page);
+    }
+
+    @GetMapping("top3Province")
+    public List<Top3Province> getTop3Province() {
+        return roomService.top3Province();
+    }
+
+    @GetMapping("provinceDetail")
+    public ProvinceDetail provinceDetail(@RequestParam("provinceId") Integer id, @RequestParam("year") Integer year) {
+        return roomService.provinceDetail(id, year);
     }
 }
 

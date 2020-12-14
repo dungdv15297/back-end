@@ -17,6 +17,7 @@ public class AccountDetailDto {
     private Integer status;
     private String updated;
     private String username;
+    private Integer role;
     private String updatedAc;
     private String errorCode;
 }
