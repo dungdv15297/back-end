@@ -149,6 +149,15 @@ public class AccountResource {
         }
     }
 
+    @PostMapping("/deleteById")
+    public boolean deleteAccById(@RequestBody String id) {
+            AccountDetail accountDetail = accountDetailRepository.findById(id);
+            Account account = accountRepository.findById(id);
+            accountRepository.delete(account);
+            accountDetailRepository.delete(accountDetail);
+            return true;
+    }
+
     @GetMapping("/getByRole")
     public List<AccountDetailDto> getAccountDetailByRole(@RequestParam("role") Integer role) {
             List<AccountDetailDto>  accountDetail = accountService.getUserbyRole(role);
