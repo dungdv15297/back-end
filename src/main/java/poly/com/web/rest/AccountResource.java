@@ -23,10 +23,12 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.*;
+import poly.com.service.dto.UserDTO;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.time.Instant;
+import java.util.List;
 import java.util.UUID;
 
 @RestController
@@ -149,6 +151,31 @@ public class AccountResource {
         }
     }
 
+    @PostMapping("/deleteById")
+    public boolean deleteAccById(@RequestBody String id) {
+            AccountDetail accountDetail = accountDetailRepository.findById(id);
+            Account account = accountRepository.findById(id);
+            accountRepository.delete(account);
+            accountDetailRepository.delete(accountDetail);
+            return true;
+    }
+
+    @GetMapping("/getByRole")
+    public List<AccountDetailDto> getAccountDetailByRole(@RequestParam("role") Integer role) {
+            List<AccountDetailDto>  accountDetail = accountService.getUserbyRole(role);
+            return  accountDetail;
+    }
+
+    @PostMapping("/updateStatus")
+    public boolean updateStatus (@RequestParam("id") String id, @RequestBody Integer status) {
+        Account account = this.accountRepository.findById(id);
+        if(account != null) {
+            account.setStatus(status);
+            this.accountRepository.save(account);
+            return true;
+        }
+        return  false;
+    }
     @PostMapping("/authenticate")
     public ResponseEntity<AuthResponse> generateToken(@RequestBody AuthRequest request) throws Exception{
         try {
@@ -204,7 +231,7 @@ public class AccountResource {
             account.setCreatedBy(username);
             account.setLastModifiedBy(username);
             account.setLastModifiedDate(Instant.now());
-            account.setStatus(AccountStatus.NotVerified);
+            account.setStatus(AccountStatus.Verified);
 
             accountDetail.setId(id);
             accountDetail.setName(fullname);

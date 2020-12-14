@@ -2,6 +2,7 @@ package poly.com.service;
 
 import poly.com.client.dto.account.CreateAccountRequest;
 import poly.com.client.dto.account.CreateAccountResponse;
+import poly.com.client.dto.accountDetail.AccountDetailDto;
 import poly.com.config.CustomUserDetails;
 import poly.com.config.common.ValidationErrorResponse;
 import poly.com.config.common.exception.ServiceException;
@@ -68,23 +69,25 @@ public class AccountService implements UserDetailsService {
         return ImageBase64.encoder(path);
     }
 
-    public List<UserDTO> getUserbyRole(Integer role) {
+    public List<AccountDetailDto> getUserbyRole(Integer role) {
         if(role != null) {
             List<Account> lstAccount = accountRepository.findOptByRole(role);
-            List<String> id = lstAccount.stream().map(x -> x.getId()).collect(Collectors.toList());
-            List<AccountDetail> lstAccountDetail = accountDetailRepository.findByListId((id));
-            List<UserDTO> result = lstAccountDetail.stream().map(item ->
-                    UserDTO.builder()
-                            .address(item.getAddress())
-                            .balance(item.getBalance())
-                            .birthday(item.getBirthday())
-                            .createdBy(item.getCreatedBy())
-                            .createdDate(item.getCreatedDate())
-                            .email(item.getEmail())
-                            .gender(item.getGender())
-                            .build()
+            if(!lstAccount.isEmpty()) {
+                List<String> id = lstAccount.stream().map(x -> x.getId()).collect(Collectors.toList());
+                List<AccountDetail> lstAccountDetail = accountDetailRepository.findByListId((id));
+                List<AccountDetailDto> result = lstAccountDetail.stream().map(item ->
+                        item.toDto()
                 ).collect(Collectors.toList());
-            return result;
+                for(Account itemAcc : lstAccount){
+                    for (AccountDetailDto itemDto : result){
+                        if(itemAcc.getId().equals(itemDto.getId())){
+                            itemDto.setUsername(itemAcc.getUsername());
+                            itemDto.setStatus(itemAcc.getStatus());
+                        }
+                    }
+                }
+                return result;
+            }
         }
        return new ArrayList<>();
     }
