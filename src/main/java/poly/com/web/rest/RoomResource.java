@@ -171,6 +171,11 @@ public class RoomResource {
     public ProvinceDetail provinceDetail(@RequestParam("provinceId") Integer id, @RequestParam("year") Integer year) {
         return roomService.provinceDetail(id, year);
     }
+
+    @PostMapping("updateStatus")
+    public Boolean updateStatus(@RequestParam("roomId") String roomId, @RequestParam("status") Integer status) {
+        return roomService.updateStatus(roomId, status);
+    }
 }
 
 

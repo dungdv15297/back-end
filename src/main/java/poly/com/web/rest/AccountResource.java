@@ -183,6 +183,9 @@ public class AccountResource {
             if(!MD5Library.compareMd5(request.getPassword(), userDetails.getPassword())){
                 throw new UsernameNotFoundException("PasswordNotFound");
             }
+            if (!userDetails.isEnabled()) {
+                return ResponseEntity.ok(AuthResponse.builder().errorCode("locked").build());
+            }
             SecurityContextHolder.getContext().getAuthentication();
             String token = jwtUtil.generateToken((CustomUserDetails) userDetails);
             return ResponseEntity.ok(AuthResponse.builder().jwt(token).build());

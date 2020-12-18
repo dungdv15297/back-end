@@ -61,6 +61,7 @@ public interface RoomRepository extends JpaRepository<Room,Integer> {
             "and (pr.PROVINCE_ID = :provinceId or :provinceId is null) " +
             "and (r.TYPE_OF = :typeOfRoom or :typeOfRoom is null) " +
             "order by " +
+            "r.STATUS ASC, " +
             "CASE " +
             "WHEN (r.LAST_UP_TOP > :upTopTime) THEN 1 ELSE 0 " +
             "END desc, " +

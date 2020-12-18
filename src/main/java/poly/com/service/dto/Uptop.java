@@ -8,4 +8,5 @@ import lombok.Data;
 public class Uptop {
     private Boolean accept;
     private String time;
+    private Boolean statusReject;
 }

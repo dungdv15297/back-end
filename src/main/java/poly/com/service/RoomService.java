@@ -395,6 +395,12 @@ public class RoomService {
             return Uptop.builder().accept(false).build();
         }
 
+        if (room.get().getStatus() == 2) {
+            return Uptop.builder()
+                .statusReject(true)
+                .build();
+        }
+
         Instant lastUptop = room.get().getLastUpTop();
         if (lastUptop == null) {
             return Uptop.builder().accept(true).build();
@@ -532,5 +538,25 @@ public class RoomService {
                 .uptop(uptop)
                 .unuptop(unuptop)
                 .build();
+    }
+
+    public Boolean updateStatus(String roomId, Integer status) {
+        try {
+            Optional<Room> room = roomRepository.findByIdRoom(roomId);
+            if (!room.isPresent()) {
+                return false;
+            }
+            Room domain = room.get();
+            domain.setStatus(status);
+            domain.setLastModifiedDate(Instant.now());
+            if (status == 0) {
+                domain.setLastUpTop(null);
+                domain.setUpTopStatus(0);
+            }
+            roomRepository.save(domain);
+            return true;
+        } catch (Exception err) {
+            return false;
+        }
     }
 }
