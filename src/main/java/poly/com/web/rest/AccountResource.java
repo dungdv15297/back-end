@@ -13,6 +13,7 @@ import poly.com.domain.Account;
 import poly.com.domain.AccountDetail;
 import poly.com.repository.AccountDetailRepository;
 import poly.com.repository.AccountRepository;
+import poly.com.repository.PaymentRepository;
 import poly.com.service.AccountService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,6 +24,8 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.*;
+import poly.com.service.RoomService;
+import poly.com.service.SearchConditionService;
 import poly.com.service.dto.UserDTO;
 
 import javax.servlet.http.HttpServletRequest;
@@ -49,6 +52,15 @@ public class AccountResource {
 
     @Autowired
     private AccountDetailRepository accountDetailRepository;
+
+    @Autowired
+    private RoomService roomService;
+
+    @Autowired
+    private SearchConditionService searchConditionService;
+
+    @Autowired
+    private PaymentRepository paymentRepository;
 
     public AccountResource(
             AccountService accountService,
@@ -155,6 +167,9 @@ public class AccountResource {
     public boolean deleteAccById(@RequestBody String id) {
             AccountDetail accountDetail = accountDetailRepository.findById(id);
             Account account = accountRepository.findById(id);
+            roomService.deleteByAccount(id);
+            searchConditionService.deleteByAccount(id);
+            paymentRepository.deleteByAccount(id);
             accountRepository.delete(account);
             accountDetailRepository.delete(accountDetail);
             return true;

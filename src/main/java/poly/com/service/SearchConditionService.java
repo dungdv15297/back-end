@@ -40,4 +40,8 @@ public class SearchConditionService {
                 .build();
     }
 
+    public void deleteByAccount(String accountId) {
+        searchConditionRepository.deleteByAccount(accountId);
+    }
+
 }

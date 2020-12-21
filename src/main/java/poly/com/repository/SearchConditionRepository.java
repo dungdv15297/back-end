@@ -1,9 +1,11 @@
 package poly.com.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 import poly.com.domain.SearchCondition;
 
 import java.util.List;
@@ -31,4 +33,9 @@ public interface SearchConditionRepository extends JpaRepository<SearchCondition
 
     @Query("select s.acreageMax from SearchCondition s where s.accountId = :sid group by s.acreageMax order by count(s.acreageMax) desc")
     List<Integer> getTopacreageMax(@Param("sid") String sid);
+
+    @Modifying
+    @Transactional
+    @Query(value = "delete from search_condition where ACCOUNT_ID = :accountId", nativeQuery = true)
+    void deleteByAccount(@Param("accountId") String accountId);
 }

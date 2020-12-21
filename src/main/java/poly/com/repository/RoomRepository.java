@@ -126,4 +126,9 @@ public interface RoomRepository extends JpaRepository<Room,Integer> {
 //            " AND room.LAST_UP_TOP > DATE_SUB(NOW(), INTERVAL 7 DAY)" +
 //            " AND YEAR(room.CREATED_DATE) = YEAR(NOW())", nativeQuery = true)
 //    Integer countNotUptopByWard(@Param("provinceId") Integer provinceId, @Param("wardID") Integer wardId);
+
+    @Modifying
+    @Query(value = "delete from room where ACCOUNT_ID = :accountId", nativeQuery = true)
+    void deleteByAccount(@Param("accountId") String accountId);
+
 }

@@ -559,4 +559,8 @@ public class RoomService {
             return false;
         }
     }
+
+    public void deleteByAccount(String accountId) {
+        roomRepository.deleteByAccount(accountId);
+    }
 }
