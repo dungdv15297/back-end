@@ -494,8 +494,8 @@ public class RoomService {
                 .notUptop(notUptop)
                 .monthNotUptop(monthNotUptop)
                 .monthUptop(monthUptop)
-                .month(Calendar.getInstance().get(Calendar.MONTH))
-                .year(Calendar.getInstance().get(Calendar.YEAR))
+                .month(Calendar.getInstance().MONTH)
+                .year(Calendar.getInstance().YEAR)
                 .build();
     }
 
