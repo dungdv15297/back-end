@@ -5,10 +5,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import poly.com.config.common.domain.AbstractAuditingEntity;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.io.Serializable;
 import java.time.Instant;
 
@@ -30,6 +27,7 @@ public class Payment extends AbstractAuditingEntity implements Serializable {
     @Column(name = "STATUS")
     private Integer status;
 
-    @Column(name = "ACCOUNT_ID")
-    private String accountId;
+    @ManyToOne
+    @JoinColumn(name = "ACCOUNT_ID",referencedColumnName = "ACCOUNT_ID")
+    private Account account;
 }
