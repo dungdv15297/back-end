@@ -549,7 +549,7 @@ public class RoomService {
             Room domain = room.get();
             domain.setStatus(status);
             domain.setLastModifiedDate(Instant.now());
-            if (status == 0) {
+            if (status == 2) {
                 domain.setLastUpTop(null);
                 domain.setUpTopStatus(0);
             }
